@@ -8,9 +8,13 @@ try:
 except ImportError:
     cm = None
 try:
-    import pyqtgraph.Qt as qt
+    import pyqtgraph.Qt as qt # type: ignore
 except ImportError:
     qt = None
+
+
+#Colormaps need to be 256,3
+
 
 CET_NAMES = {
     'CET-L1': 'CET-L-Gry',
@@ -51,6 +55,13 @@ MPL_NAMES = {
     'nipy_spectral': 'nipy_spectral'
 }
 
+IGOR_NAMES = {
+    
+    'ColdWarm': 'cold_warm',
+    'RainbowLight': 'rainbow_light',
+    'Terrain': 'terrain'
+}
+
 modulepath = Path(__file__).parent
 
 
@@ -73,6 +84,7 @@ class CMap:
         if cm:
             self.make_mpl_maps()
         self.make_icons()
+        self.make_igor_maps()
         self.cmaps = self.update_cmap_list()
 
     def clear_cache(self):
@@ -134,6 +146,19 @@ class CMap:
                 newpath = Path(modulepath, 'data', CET_NAMES[cmap_name])
                 np.save(newpath, dat)
 
+    @staticmethod
+    def make_igor_maps():
+        filelist = Path(modulepath, 'data', 'igor_cmap').glob('*.txt')
+        print(filelist)
+        for filepath in filelist:
+            cmap_name = filepath.stem
+            if cmap_name in IGOR_NAMES:
+                print(str(filepath))
+                dat = np.loadtxt(str(filepath), dtype = np.uint8, delimiter='\t')
+                newpath = Path(modulepath, 'data', IGOR_NAMES[cmap_name])
+                print(newpath)
+                np.save(newpath, dat)      
+                
     @staticmethod
     def make_scivis_maps():
         filelist = Path(modulepath, 'data', 'scivis_cmaps').glob('*.xml')

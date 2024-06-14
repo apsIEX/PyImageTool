@@ -51,7 +51,7 @@ class ImageSlice(ImageBase):
         self.cmap_menu.addAction(self.edit_cmap_action)
         self.menu.addMenu(self.cmap_menu)
 
-        # self.cmap_editor = QtWidgets.QWidget()
+        self.cmap_editor = QtWidgets.QWidget() #AP removed comment to run
         self.build_cmap_form()
 
     def edit_cmap(self):
