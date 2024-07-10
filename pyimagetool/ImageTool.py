@@ -111,6 +111,11 @@ class ImageTool(QtWidgets.QWidget):
         spinbox.blockSignals(False)
 
     def reset(self):
+        layout = QtWidgets.QBox.Layout()
+        #label = QtWidgets.QLabel("Color Map Editor")
+        #layout.addWidget(label)
+
+        #slider = QtWidgets.QSlider()
         # Create info bar and ImageTool PyQt Widget
         self.info_bar.reset(self.data)
         self.pg_win.reset(self.data)

@@ -69,7 +69,7 @@ class CMapEditor(QtWidgets.QWidget):
         self.enable_isocurve = True
         self.enable_isocurve_label = QtWidgets.QLabel('Enable Isocurve?')
         self.cmap_label = QtWidgets.QLabel('Colormap')
-        self.cmap_label.setAlignment(QtCore.Qt.AlignHCenter)
+        self.cmap_label.setAlignment(QtCore.Qthist.AlignHCenter)
         self.cmap_combobox = QtWidgets.QComboBox()
         self.cmap_combobox.setMinimumSize(150, 0)
         self.header = QtWidgets.QWidget()
@@ -304,6 +304,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         # histogram
         self.histogram = pg.PlotItem()
         self.hist_data = self.histogram.plot(self.bin_midpoints, self.hist)
+        
 
         # histogram line and position label
         self.hist_line = pg.InfiniteLine(bounds=(self.bin_edges[0], self.bin_edges[-1]), movable=True)
@@ -349,6 +350,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         self.histogram.addItem(self.hist_line)
         self.histogram.addItem(self.hist_graph)
         self.histogram.addItem(self.hist_line_label)
+        #self.histogram.addItem(pg.ROI(pos=(0,0), size=(100,20), pen=pg.mkPen("4CBB17")))
 
         # Mouse interaction
         self.mousepnt: Union[None, QtCore.QPointF] = QtCore.QPointF(0, 0)

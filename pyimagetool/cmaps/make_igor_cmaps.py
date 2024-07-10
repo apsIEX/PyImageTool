@@ -4,7 +4,8 @@ import numpy as np
 names = {
     'ColdWarm': 'cold_warm',
     'RainbowLight': 'rainbow_light',
-    'Terrain': 'terrain'
+    'Terrain': 'terrain',
+    'BuPu' :'BuPu'
 }
 def make_igor_cmaps():
     for dirName, subdirList, fileList in os.walk('data'):

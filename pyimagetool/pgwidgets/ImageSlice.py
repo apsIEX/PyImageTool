@@ -52,6 +52,8 @@ class ImageSlice(ImageBase):
         self.menu.addMenu(self.cmap_menu)
 
         self.cmap_editor = QtWidgets.QWidget() #AP removed comment to run
+        # everything that will happen in edit cmap comes from the Class CMapEditor
+        #maybe it should be written as self.cmap_CMapEditor()
         self.build_cmap_form()
 
     def edit_cmap(self):
@@ -62,6 +64,13 @@ class ImageSlice(ImageBase):
             self.img.setLookupTable(lut)
 
     def build_cmap_form(self):
+        #layout = QtWidgets.QBox.Layout()
+        #label = QtWidgets.QLabel("Color Map Editor")
+        #layout.addWidget(label)
+
+        #slider = QtWidgets.QSlider()
+
+        
         pass
 
     def cmap_reset(self):

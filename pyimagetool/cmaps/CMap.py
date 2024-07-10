@@ -59,7 +59,8 @@ IGOR_NAMES = {
     
     'ColdWarm': 'cold_warm',
     'RainbowLight': 'rainbow_light',
-    'Terrain': 'terrain'
+    'Terrain': 'terrain',
+    'BuPu' :'BuPu'
 }
 
 modulepath = Path(__file__).parent
