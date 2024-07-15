@@ -57,9 +57,9 @@ MPL_NAMES = {
 
 IGOR_NAMES = {
     
-    'ColdWarm': 'cold_warm',
-    'RainbowLight': 'rainbow_light',
-    'Terrain': 'terrain',
+    'cold_warm': 'cold_warm',
+    'rainbow_light': 'rainbow_light',
+    'Terrain_256': 'terrain_256',
     'BuPu' :'BuPu'
 }
 
@@ -118,6 +118,7 @@ class CMap:
         else:
             raise ImportError("Failed to import pyqtgraph, method load_icon() not available.")
 
+            np.save(newpath, dat)
     def load_pixmap(self, name='viridis'):
         if qt:
             if name in self.pixmaps:

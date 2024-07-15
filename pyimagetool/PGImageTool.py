@@ -252,15 +252,15 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             img_ax.autoRange()
             
             
-            self.roi.roi.addScaleHandle((0.5,1), (0.5,0.5))
-            self.roi.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
-            self.roi.roi.setZValue(10) 
+            #self.roi.roi.addScaleHandle((0.5,1), (0.5,0.5))
+            #self.roi.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
+            #self.roi.roi.setZValue(10) 
 
             #img = img_ax.getImageItem()
             #data = img.getArrayRegion(roi.getArraySlice(img_ax.image,img_ax))
             
 
-            img_ax.addItem(self.roi.roi)
+            #img_ax.addItem(self.roi.roi)
             
             #img_ax.addItem(pg.ROI(pos=(-8, 14), size=(100,20), pen=pg.mkPen('g')))
             
@@ -487,15 +487,15 @@ class Cursor:
                 self._index[i]._upper_lim = self.data.shape[i] - 1
                 self._pos[i]._lower_lim = self.data.coord_min[i]
                 self._pos[i]._upper_lim = self.data.coord_max[i]
-                self._binwidth[i]._lower_lim = 0
-                self._binwidth[i]._upper_lim = self.data.coord_max[i] - self.data.coord_min[i]
-                self._binpos = [[cmin, cmin + delta/2] for cmin, delta in zip(self.data.coord_min, self.data.delta)]
+                #self._binwidth[i]._lower_lim = 0
+                # self._binwidth[i]._upper_lim = self.data.coord_max[i] - self.data.coord_min[i]
+                # self._binpos = [[cmin, cmin + delta/2] for cmin, delta in zip(self.data.coord_min, self.data.delta)]
         for i in range(self.data.ndim):
             self.set_index(i, 0)
-            self.set_binwidth_i(i, 1)
+            #self.set_binwidth_i(i, 1)
 
 # #JM
-class ROI:
+class ROI(pg.ROI):
     """An object that holds a list of current index and position of the cursor location. Warning: this function
     will raise a list indexing error if you access y, z, or t variables on data which does not have that as a
     dimension.
@@ -512,7 +512,8 @@ class ROI:
         self._size_pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
                                               for cmin, cmax in zip(data.coord_min, data.coord_max)]
         
-        self.roi = pg.ROI((700,50),(100,20), pen = 'g')
+        #self.roi = pg.ROI((700,50),(100,20), pen = 'g')
+        #self.roi = pg.ROI((self._index[0],self._index[1]),(self._size_index[0],self._size_index[1]), pen = 'g')
 
     def reset(self, data=None): #to be modified, copied from cursor
         if data is not None:
@@ -522,7 +523,6 @@ class ROI:
                 self._index[i]._upper_lim = self.data.shape[i] - 1
                 self._pos[i]._lower_lim = self.data.coord_min[i]
                 self._pos[i]._upper_lim = self.data.coord_max[i]
-                self._binpos = [[cmin, cmin + delta/2] for cmin, delta in zip(self.data.coord_min, self.data.delta)]
         for i in range(self.data.ndim):
             self.set_index(i, 0)
 

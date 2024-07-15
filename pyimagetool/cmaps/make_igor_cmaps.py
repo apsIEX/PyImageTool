@@ -2,9 +2,9 @@ import os
 import numpy as np
 
 names = {
-    'ColdWarm': 'cold_warm',
-    'RainbowLight': 'rainbow_light',
-    'Terrain': 'terrain',
+    'cold_warm': 'cold_warm',
+    'rainbow_light': 'rainbow_light',
+    'Terrain_256': 'terrain_256',
     'BuPu' :'BuPu'
 }
 def make_igor_cmaps():
