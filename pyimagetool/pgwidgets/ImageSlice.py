@@ -1,6 +1,6 @@
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtWidgets, QtCore
-import warnings
+#import warnings
 import numpy as np
 from functools import partial
 
@@ -8,6 +8,8 @@ from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps import CMap
 from pyimagetool.pgwidgets import ImageBase
 from pyimagetool.CMapEditor import CMapDialog
+#from pyimagetool import PGImageTool
+from pyimagetool.qtwidgets.RegionOfInterest import ROI
 
 
 class ImageSlice(ImageBase):
@@ -28,6 +30,28 @@ class ImageSlice(ImageBase):
         self.cmap_reset_action = QtWidgets.QAction('Reset')
         self.cmap_reset_action.triggered.connect(self.cmap_reset)
         self.cmap_menu.addAction(self.cmap_reset_action)
+
+
+# -------------
+        # ROI menu
+        # -------------
+        self.roi_menu = QtWidgets.QMenu('ROI Map')
+        
+        # test ROI
+        self.roi_test_action = QtWidgets.QAction('ROI')
+        self.roi_test_action.triggered.connect(self.roi_test)
+        self.roi_menu.addAction(self.roi_test_action)
+
+        self.roi_test_stat = QtWidgets.QAction('Stats')
+        self.roi_test_stat.triggered.connect(self.roi_position)
+        self.roi_menu.addAction(self.roi_test_stat)
+
+        self.menu.addMenu(self.roi_menu)
+
+
+
+
+
         # Scale to view
         self.cmap_to_view_action = QtWidgets.QAction('Scale to view')
         self.cmap_to_view_action.triggered.connect(self.cmap_to_range)
@@ -76,6 +100,13 @@ class ImageSlice(ImageBase):
     def cmap_reset(self):
         self.img.setLookupTable(self.baselut)
         self.img.setLevels([np.min(self.data.values), np.max(self.data.values)])
+
+    def roi_test(self):
+
+        print("Test works")
+
+    def roi_position(self):
+        print(self.roi.pos())
 
     def cmap_to_range(self):
         [[xmin, xmax], [ymin, ymax]] = self.vb.viewRange()

@@ -352,7 +352,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         self.histogram.addItem(self.hist_line)
         self.histogram.addItem(self.hist_graph)
         self.histogram.addItem(self.hist_line_label)
-        #self.histogram.addItem(pg.ROI(pos=(0,0), size=(100,20), pen=pg.mkPen('g')))
+        #self.histogram.addItem(pg.RectROI(pos=(10,5), size=(100,20), pen=pg.mkPen('g')))
 
         # Mouse interaction
         self.mousepnt: Union[None, QtCore.QPointF] = QtCore.QPointF(0, 0)

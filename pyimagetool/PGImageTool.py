@@ -11,6 +11,8 @@ from .cmaps import CMap
 from .DataModel import ValueLimitedModel
 from pyimagetool.pgwidgets.BinningLine import BinningLine
 from pyimagetool.pgwidgets.ImageSlice import ImageSlice
+from pyimagetool.qtwidgets.RegionOfInterest import ROI
+
 
 
 class PGImageTool(pg.GraphicsLayoutWidget):
@@ -45,7 +47,8 @@ class PGImageTool(pg.GraphicsLayoutWidget):
 
         self._signal_proxies: List[pg.SignalProxy] = []  # a list of created signal proxies to be held in memory
 
-        self.roi: ROI = ROI(data)
+        #defined class ROI 
+        self.ROI: ROI = ROI(data)
 
         # Properties for color map
         self.ct: np.array = np.array([])
@@ -97,6 +100,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
                 img_ax.aspect_ui.lockAspect.click()
             img_ax.vb.setXRange(self.data.coord_min[i], self.data.coord_max[i])
             img_ax.vb.setYRange(self.data.coord_min[j], self.data.coord_max[j])
+            
         # Update the cursor lines
         for axis, line_list in self.cursor_lines.items():
             i = self.coord_to_index[axis]
@@ -249,19 +253,16 @@ class PGImageTool(pg.GraphicsLayoutWidget):
                 self.cursor_lines[axis1] = [horz_cursor]
             img_ax.addItem(vert_cursor)
             img_ax.addItem(horz_cursor)
+            #img_ax.autoRange()
+
+           #adding ROI     
+            self.ROI.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
+            self.ROI.roi.addScaleHandle((0.5,1), (0.5,0.5))
+            self.ROI.roi.setZValue(20)       
+            img_ax.addItem(self.ROI.roi)
             img_ax.autoRange()
             
-            
-            #self.roi.roi.addScaleHandle((0.5,1), (0.5,0.5))
-            #self.roi.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
-            #self.roi.roi.setZValue(10) 
-
-            #img = img_ax.getImageItem()
-            #data = img.getArrayRegion(roi.getArraySlice(img_ax.image,img_ax))
-            
-
-            #img_ax.addItem(self.roi.roi)
-            
+            #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])'''
             #img_ax.addItem(pg.ROI(pos=(-8, 14), size=(100,20), pen=pg.mkPen('g')))
             
 
@@ -375,7 +376,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             pos = np.array([x.value for x in self.cursor.pos])
             pos[i] = mousepnt.x()
             pos[j] = mousepnt.y()
-            idx = np.round((pos - self.data.coord_min)/self.data.delta).astype(np.int)
+            idx = np.round((pos - self.data.coord_min)/self.data.delta).astype(np.int32)
             if self.data.ndim == 2:
                 self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g} [{3:d},{4:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
             elif self.data.ndim == 3:
@@ -495,51 +496,51 @@ class Cursor:
             #self.set_binwidth_i(i, 1)
 
 # #JM
-class ROI(pg.ROI):
-    """An object that holds a list of current index and position of the cursor location. Warning: this function
-    will raise a list indexing error if you access y, z, or t variables on data which does not have that as a
-    dimension.
-    """
-    def __init__(self, data: RegularDataArray):
-        """
-        :param data: Regular spaced data, which will be used to calculate how to transform axis to coordinate
-        """
-        self.data = data
-        self._index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
-        self._pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
-                                              for cmin, cmax in zip(data.coord_min, data.coord_max)]
-        self._size_index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
-        self._size_pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
-                                              for cmin, cmax in zip(data.coord_min, data.coord_max)]
+# class ROI(pg.ROI):
+#     """An object that holds a list of current index and position of the cursor location. Warning: this function
+#     will raise a list indexing error if you access y, z, or t variables on data which does not have that as a
+#     dimension.
+#     """
+#     def __init__(self, data: RegularDataArray):
+#         """
+#         :param data: Regular spaced data, which will be used to calculate how to transform axis to coordinate
+#         """
+#         self.data = data
+#         self._index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
+#         self._pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
+#                                               for cmin, cmax in zip(data.coord_min, data.coord_max)]
+#         self._size_index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
+#         self._size_pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
+#                                               for cmin, cmax in zip(data.coord_min, data.coord_max)]
         
-        #self.roi = pg.ROI((700,50),(100,20), pen = 'g')
-        #self.roi = pg.ROI((self._index[0],self._index[1]),(self._size_index[0],self._size_index[1]), pen = 'g')
+#         #self.roi = pg.ROI((700,50),(100,20), pen = 'g')
+#         #self.roi = pg.ROI((self._index[0],self._index[1]),(self._size_index[0],self._size_index[1]), pen = 'g')
 
-    def reset(self, data=None): #to be modified, copied from cursor
-        if data is not None:
-            self.data = data
-            for i in range(self.data.ndim):
-                self._index[i]._lower_lim = 0
-                self._index[i]._upper_lim = self.data.shape[i] - 1
-                self._pos[i]._lower_lim = self.data.coord_min[i]
-                self._pos[i]._upper_lim = self.data.coord_max[i]
-        for i in range(self.data.ndim):
-            self.set_index(i, 0)
+#     def reset(self, data=None): #to be modified, copied from cursor
+#         if data is not None:
+#             self.data = data
+#             for i in range(self.data.ndim):
+#                 self._index[i]._lower_lim = 0
+#                 self._index[i]._upper_lim = self.data.shape[i] - 1
+#                 self._pos[i]._lower_lim = self.data.coord_min[i]
+#                 self._pos[i]._upper_lim = self.data.coord_max[i]
+#         for i in range(self.data.ndim):
+#             self.set_index(i, 0)
 
-    @property
-    def pos(self):
-        return self._pos
+#     @property
+#     def pos(self):
+#         return self._pos
 
-    @property
-    def index(self):
-        return self._index
+#     @property
+#     def index(self):
+#         return self._index
     
-    @property
-    def size_pos(self):
-        return self._size_pos
+#     @property
+#     def size_pos(self):
+#         return self._size_pos
 
-    @property
-    def size_index(self):
-        return self._size_index
+#     @property
+#     def size_index(self):
+#         return self._size_index
     
-    #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])
+#     #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])
