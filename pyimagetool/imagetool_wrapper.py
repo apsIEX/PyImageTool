@@ -1,12 +1,12 @@
 import numpy as np
 import re
 import pyimagetool as it
-from iexplot.plotting import plot_1D, plot_2D, plot_dimage
-from iexplot.pynData.pynData import nData
 
-
-
-class IT_CONTAINER:
+#To do:
+# - connect the cursors between two imagetools
+# - export dialog and add to menu
+# - 
+class IT_WRAPPER:
     """
     Container for managing multiple imagetools
     """
@@ -194,17 +194,10 @@ class IT_CONTAINER:
         '''
         creates a new instance of imagetool and adds it to the tool class
 
-        d = data of type pynData or RegularDataArray
+        d = data array of type np.array or pyimagetool.RegularArray
 
         '''
-        
-        if isinstance(d,nData):
-            ra = pynData_to_ra(d)
-        elif type(d) == it.RegularDataArray:
-            ra = d
-        else: 
-            print('Not a valid data type, must be nData or RegularDataArray')
-        obj = it.imagetool(ra)
+        obj = it.imagetool(d)
         name = self._append_instance(obj)
         obj.setWindowTitle(name)
         obj.show()

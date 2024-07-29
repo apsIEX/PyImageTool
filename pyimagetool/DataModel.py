@@ -1,5 +1,4 @@
 from pyqtgraph.Qt import QtCore
-import math
 
 
 class SingleValueModel(QtCore.QObject):

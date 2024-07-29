@@ -3,12 +3,11 @@ from typing import Dict, List, Tuple, Union
 from functools import partial
 from collections.abc import Iterable
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
-from .DataMatrix import RegularDataArray
-from .cmaps import CMap
-from .DataModel import ValueLimitedModel
+from pyimagetool.DataMatrix import RegularDataArray
+from pyimagetool.cmaps import CMap
+from pyimagetool.DataModel import ValueLimitedModel
 from pyimagetool.pgwidgets.BinningLine import BinningLine
 from pyimagetool.pgwidgets.ImageSlice import ImageSlice
 
@@ -22,8 +21,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
     index_to_coord: List[str] = ['x', 'y', 'z', 't']
     frame_rate = 60
     bin_pen = pg.mkPen(style=pg.Qt.QtCore.Qt.DashLine)
-
-    mouse_hover = QtCore.Signal(str)  # event fired when the mouse moves on an image
+    mouse_hover = pg.Qt.QtCore.Signal(str)  # event fired when the mouse moves on an image
 
     def __init__(self, data: RegularDataArray, parent=None, layout=0):
         """data is the RegularSpacedData to examine
@@ -40,8 +38,8 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         self.lineplots_data: Dict[str, Tuple[pg.PlotDataItem, str]] = {}  # dict of PlotDataItems, orient = 'h' or 'v'
         self.cursor_lines: Dict[str, List[BinningLine]] = {}  # dict of cursor lines for 'x', 'y', 'z', etc.
         self.imgs: Dict[str, ImageSlice] = {}  # a dictionary of ImageItems
-        self.img_tr: Dict[str, QtGui.QTransform] = {}  # a dictionary of transforms going from index to coordinates
-        self.img_tr_inv: Dict[str, QtGui.QTransform] = {}  # a dictionary of transforms going from coordinates to index
+        self.img_tr: Dict[str, pg.Qt.QtGui.QTransform] = {}  # a dictionary of transforms going from index to coordinates
+        self.img_tr_inv: Dict[str, pg.Qt.QtGui.QTransform] = {}  # a dictionary of transforms going from coordinates to index
 
         self._signal_proxies: List[pg.SignalProxy] = []  # a list of created signal proxies to be held in memory
 
@@ -50,7 +48,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         self.ct_name: str = 'blue_orange'
 
         # Properties for tracking the mouse
-        self.mouse_pos: QtCore.QPointF = QtCore.QPointF(0, 0)
+        self.mouse_pos: pg.Qt.QtCore.QPointF = pg.Qt.QtCore.QPointF(0, 0)
         self.mouse_panel: str = ''
 
         # Keyboard
@@ -321,13 +319,13 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             raise NotImplementedError("Mouse panel {0} is unknown".format(self.mouse_panel))
 
     def keyReleaseEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Shift:
+        if e.key() == pg.Qt.QtCore.Qt.Key_Shift:
             self.shift_down = False
         else:
             e.ignore()
 
     def keyPressEvent(self, e):
-        if e.key() == QtCore.Qt.Key_Shift:
+        if e.key() == pg.Qt.QtCore.Qt.Key_Shift:
             self.shift_down = True
             self.set_crosshair_to_mouse()
         else:

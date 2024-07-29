@@ -5,9 +5,9 @@ import pyqtgraph as pg
 import numpy as np
 import warnings
 
-from .widgets import InfoBar
-from .PGImageTool import PGImageTool
-from .DataMatrix import RegularDataArray
+from pyimagetool.widgets import InfoBar
+from pyimagetool.PGImageTool import PGImageTool
+from pyimagetool.DataMatrix import RegularDataArray
 
 try:
     import xarray as xr

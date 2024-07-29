@@ -1,9 +1,9 @@
-from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
+from pyqtgraph.Qt import QtCore, QtWidgets
 from typing import List
 from functools import partial
 
-from .DataMatrix import RegularDataArray
-from .cmaps import CMap
+from pyimagetool.DataMatrix import RegularDataArray
+from pyimagetool.cmaps import CMap
 
 
 class InfoBar(QtWidgets.QWidget):

@@ -1,1 +1,1 @@
-from .ImageBase import ImageBase
+from pyimagetool.pgwidgets.ImageBase import ImageBase

@@ -15,9 +15,9 @@ from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
 from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
-from .widgets import AspectRatioForm, InfoBar
-from .PGImageTool import InfiniteLineBinning
-from .DataMatrix import RegularSpacedData
+from pyimagetool.widgets import AspectRatioForm, InfoBar
+from pyimagetool.PGImageTool import InfiniteLineBinning
+from pyimagetool.DataMatrix import RegularSpacedData
 
 
 class ImageToolWidget(QtWidgets.QWidget):

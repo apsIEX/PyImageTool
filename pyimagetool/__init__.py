@@ -1,10 +1,11 @@
-from .DataMatrix import RegularDataArray
-from .ImageTool import ImageTool
-from .PGImageTool import PGImageTool
+from pyimagetool.DataMatrix import RegularDataArray
+from pyimagetool.ImageTool import ImageTool
+from pyimagetool.PGImageTool import PGImageTool
+from pyimagetool.imagetool_wrapper import IT_WRAPPER
 
 __all__ = ['ImageTool', 'RegularDataArray']
 
-
+tools = IT_WRAPPER()
 def imagetool(data):
     from pyqtgraph.Qt import QtCore, QtWidgets, QtGui
     import sys
