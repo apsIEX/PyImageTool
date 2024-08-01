@@ -82,10 +82,10 @@ class CMap:
     def reload(self):
         self.make_cet_maps()
         self.make_scivis_maps()
+        self.make_igor_maps()
         if cm:
             self.make_mpl_maps()
         self.make_icons()
-        self.make_igor_maps()
         self.cmaps = self.update_cmap_list()
 
     def clear_cache(self):

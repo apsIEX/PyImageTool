@@ -1,15 +1,17 @@
+from functools import partial
+
+import numpy as np
+
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtWidgets, QtCore
-#import warnings
-import numpy as np
-from functools import partial
+
+from PyQt5.QtWidgets import QMessageBox
 
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps import CMap
 from pyimagetool.pgwidgets import ImageBase
 from pyimagetool.CMapEditor import CMapDialog
-#from pyimagetool import PGImageTool
-from pyimagetool.qtwidgets.RegionOfInterest import ROI
+from pyimagetool.qtwidgets.RegionOfInterest import imgROI
 
 
 class ImageSlice(ImageBase):
@@ -35,21 +37,19 @@ class ImageSlice(ImageBase):
 # -------------
         # ROI menu
         # -------------
+        #had dat
+        self.imgROI = imgROI()
         self.roi_menu = QtWidgets.QMenu('ROI Map')
-        
-        # test ROI
-        self.roi_test_action = QtWidgets.QAction('ROI')
-        self.roi_test_action.triggered.connect(self.roi_test)
-        self.roi_menu.addAction(self.roi_test_action)
 
         self.roi_test_stat = QtWidgets.QAction('Stats')
-        self.roi_test_stat.triggered.connect(self.roi_position)
+        self.roi_test_stat.triggered.connect(self.showDialog_roi_stats)
         self.roi_menu.addAction(self.roi_test_stat)
 
+        self.roi_export_action = QtWidgets.QAction('Export')
+        self.roi_export_action.triggered.connect(self.roi_export_method)
+        self.roi_menu.addAction(self.roi_export_action)
+
         self.menu.addMenu(self.roi_menu)
-
-
-
 
 
         # Scale to view
@@ -87,14 +87,7 @@ class ImageSlice(ImageBase):
             lut = dialog.widget.get_lut()
             self.img.setLookupTable(lut)
 
-    def build_cmap_form(self):
-        #layout = QtWidgets.QBox.Layout()
-        #label = QtWidgets.QLabel("Color Map Editor")
-        #layout.addWidget(label)
-
-        #slider = QtWidgets.QSlider()
-
-        
+    def build_cmap_form(self):        
         pass
 
     def cmap_reset(self):
@@ -102,12 +95,16 @@ class ImageSlice(ImageBase):
         self.img.setLevels([np.min(self.data.values), np.max(self.data.values)])
 
     def roi_test(self):
-
         print("Test works")
 
-    def roi_position(self):
-        print(self.roi.pos())
+   
 
+    def roi_export_method(self):
+            print("export button works")
+            self.imgROI.export()
+            #self.imgROI.norm_data()
+        
+   
     def cmap_to_range(self):
         [[xmin, xmax], [ymin, ymax]] = self.vb.viewRange()
         mat = self.data.sel(slice(xmin, xmax), slice(ymin, ymax)).values
@@ -115,6 +112,21 @@ class ImageSlice(ImageBase):
             return
         self.img.setLevels([np.min(mat), np.max(mat)])
 
+    def showDialog_roi_stats(self):
+        msgBox = QMessageBox()
+        #msgBox.setIcon(QMessageBox.Information)
+        message = self.imgROI.stats_message()
+        msgBox.setText(message)
+        msgBox.setWindowTitle("QMessageBox ROI Stats")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgBox.buttonClicked.connect(msgButtonClick)
+
+        returnValue = msgBox.exec()
+        if returnValue == QMessageBox.Ok:
+            print('OK clicked')
+   
+def msgButtonClick(i):
+   print("Button clicked is:",i.text())
 
 def test():
     import sys
@@ -137,3 +149,4 @@ def test():
 
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()
+

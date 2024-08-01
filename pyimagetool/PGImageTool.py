@@ -4,14 +4,15 @@ from functools import partial
 from collections.abc import Iterable
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
-from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
+from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
+from PyQt5.QtWidgets import QMessageBox
 from .DataMatrix import RegularDataArray
 from .cmaps import CMap
 from .DataModel import ValueLimitedModel
 from pyimagetool.pgwidgets.BinningLine import BinningLine
 from pyimagetool.pgwidgets.ImageSlice import ImageSlice
-from pyimagetool.qtwidgets.RegionOfInterest import ROI
+from pyimagetool.qtwidgets.RegionOfInterest import imgROI
 
 
 
@@ -48,7 +49,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         self._signal_proxies: List[pg.SignalProxy] = []  # a list of created signal proxies to be held in memory
 
         #defined class ROI 
-        self.ROI: ROI = ROI(data)
+        #self.imgROI: imgROI = imgROI(data)
 
         # Properties for color map
         self.ct: np.array = np.array([])
@@ -100,7 +101,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
                 img_ax.aspect_ui.lockAspect.click()
             img_ax.vb.setXRange(self.data.coord_min[i], self.data.coord_max[i])
             img_ax.vb.setYRange(self.data.coord_min[j], self.data.coord_max[j])
-            
+
         # Update the cursor lines
         for axis, line_list in self.cursor_lines.items():
             i = self.coord_to_index[axis]
@@ -255,12 +256,17 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             img_ax.addItem(horz_cursor)
             #img_ax.autoRange()
 
-           #adding ROI     
-            self.ROI.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
-            self.ROI.roi.addScaleHandle((0.5,1), (0.5,0.5))
-            self.ROI.roi.setZValue(20)       
-            img_ax.addItem(self.ROI.roi)
+            #adding ROI   
+            img_ax.imgROI.set_img_data(img_ax.data)  
+            #Fimg_ax.imgROI.set_reduced_data(img_ax.data)  
+            img_ax.imgROI.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
+            img_ax.imgROI.roi.addScaleHandle((0.5,1), (0.5,0.5))
+            img_ax.imgROI.roi.addRotateHandle([1, 0.5], [0.5, 0.5])
+            img_ax.imgROI.roi.setZValue(20)       
+            img_ax.addItem(img_ax.imgROI.roi)
             img_ax.autoRange()
+            
+            QMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())
             
             #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])'''
             #img_ax.addItem(pg.ROI(pos=(-8, 14), size=(100,20), pen=pg.mkPen('g')))
@@ -497,7 +503,7 @@ class Cursor:
 
 # #JM
 # class ROI(pg.ROI):
-#     """An object that holds a list of current index and position of the cursor location. Warning: this function
+#     """An object that holds a list of cMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())urrent index and position of the cursor location. Warning: this function
 #     will raise a list indexing error if you access y, z, or t variables on data which does not have that as a
 #     dimension.
 #     """
@@ -523,7 +529,7 @@ class Cursor:
 #                 self._index[i]._lower_lim = 0
 #                 self._index[i]._upper_lim = self.data.shape[i] - 1
 #                 self._pos[i]._lower_lim = self.data.coord_min[i]
-#                 self._pos[i]._upper_lim = self.data.coord_max[i]
+#                 self._pos[i]._upper_MessageBox.information(self,"Stats", img_ax.imgROI.stats_message())lim = self.data.coord_max[i]
 #         for i in range(self.data.ndim):
 #             self.set_index(i, 0)
 
@@ -531,7 +537,7 @@ class Cursor:
 #     def pos(self):
 #         return self._pos
 
-#     @property
+#     @propertyMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())
 #     def index(self):
 #         return self._index
     
