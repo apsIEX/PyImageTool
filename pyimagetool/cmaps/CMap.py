@@ -8,9 +8,13 @@ try:
 except ImportError:
     cm = None
 try:
-    import pyqtgraph.Qt as qt
+    import pyqtgraph.Qt as qt # type: ignore
 except ImportError:
     qt = None
+
+
+#Colormaps need to be 256,3
+
 
 CET_NAMES = {
     'CET-L1': 'CET-L-Gry',
@@ -51,6 +55,14 @@ MPL_NAMES = {
     'nipy_spectral': 'nipy_spectral'
 }
 
+IGOR_NAMES = {
+    
+    'cold_warm': 'cold_warm',
+    'rainbow_light': 'rainbow_light',
+    'Terrain_256': 'terrain_256',
+    'BuPu' :'BuPu'
+}
+
 modulepath = Path(__file__).parent
 
 
@@ -70,6 +82,7 @@ class CMap:
     def reload(self):
         self.make_cet_maps()
         self.make_scivis_maps()
+        self.make_igor_maps()
         if cm:
             self.make_mpl_maps()
         self.make_icons()
@@ -105,6 +118,7 @@ class CMap:
         else:
             raise ImportError("Failed to import pyqtgraph, method load_icon() not available.")
 
+            np.save(newpath, dat)
     def load_pixmap(self, name='viridis'):
         if qt:
             if name in self.pixmaps:
@@ -134,6 +148,19 @@ class CMap:
                 newpath = Path(modulepath, 'data', CET_NAMES[cmap_name])
                 np.save(newpath, dat)
 
+    @staticmethod
+    def make_igor_maps():
+        filelist = Path(modulepath, 'data', 'igor_cmap').glob('*.txt')
+        print(filelist)
+        for filepath in filelist:
+            cmap_name = filepath.stem
+            if cmap_name in IGOR_NAMES:
+                print(str(filepath))
+                dat = np.loadtxt(str(filepath), dtype = np.uint8, delimiter='\t')
+                newpath = Path(modulepath, 'data', IGOR_NAMES[cmap_name])
+                print(newpath)
+                np.save(newpath, dat)      
+                
     @staticmethod
     def make_scivis_maps():
         filelist = Path(modulepath, 'data', 'scivis_cmaps').glob('*.xml')

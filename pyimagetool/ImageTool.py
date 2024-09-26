@@ -22,8 +22,7 @@ class ImageTool(QtWidgets.QWidget):
     LayoutComplete = PGImageTool.LayoutComplete
     LayoutRaster = PGImageTool.LayoutRaster
 
-    def __init__(self, data: DataType,
-                 layout: int = PGImageTool.LayoutSimple, parent=None):
+    def __init__(self, data: DataType, layout: int = PGImageTool.LayoutSimple, parent=None):
         """Create an ImageTool QWidget.
         :param data: A RegularDataArray, numpy.array, or xarray.DataArray
         :param layout: An int that defines the layout. See PGImageTool for layout definitions
@@ -111,6 +110,11 @@ class ImageTool(QtWidgets.QWidget):
         spinbox.blockSignals(False)
 
     def reset(self):
+        layout = QtWidgets.QBox.Layout()
+        #label = QtWidgets.QLabel("Color Map Editor")
+        #layout.addWidget(label)
+
+        #slider = QtWidgets.QSlider()
         # Create info bar and ImageTool PyQt Widget
         self.info_bar.reset(self.data)
         self.pg_win.reset(self.data)

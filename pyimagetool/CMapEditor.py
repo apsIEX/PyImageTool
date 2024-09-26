@@ -1,5 +1,7 @@
 import pyqtgraph as pg
-from pyqtgraph.Qt import QtGui, QtCore, QtWidgets
+from PyQt5 import QtWidgets
+
+from pyqtgraph.Qt import QtGui, QtCore
 from typing import List, Union
 import numpy as np
 import pickle
@@ -69,7 +71,7 @@ class CMapEditor(QtWidgets.QWidget):
         self.enable_isocurve = True
         self.enable_isocurve_label = QtWidgets.QLabel('Enable Isocurve?')
         self.cmap_label = QtWidgets.QLabel('Colormap')
-        self.cmap_label.setAlignment(QtCore.Qt.AlignHCenter)
+        #self.cmap_label.setAlignment(QtCore.Qthist.AlignHCenter)
         self.cmap_combobox = QtWidgets.QComboBox()
         self.cmap_combobox.setMinimumSize(150, 0)
         self.header = QtWidgets.QWidget()
@@ -293,7 +295,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         width = self.bin_midpoints.max() - self.bin_midpoints.min()
         x = self.bin_midpoints.min()
         y = 0
-        self.color_bar = QtGui.QGraphicsRectItem(QtCore.QRectF(x - 0.5, y - 0.5, width + 1, height + 1))
+        self.color_bar = QtWidgets.QGraphicsRectItem(QtCore.QRectF(x - 0.5, y - 0.5, width + 1, height + 1))
         self.gradient = QtGui.QLinearGradient(QtCore.QPointF(x, 0), QtCore.QPointF(width, 0))
         self.gradient.setFinalStop(width, 0)
         self.gradient.setStops([(i/255, QtGui.QColor(*tuple(self.ct[i]))) for i in range(256)])
@@ -304,6 +306,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         # histogram
         self.histogram = pg.PlotItem()
         self.hist_data = self.histogram.plot(self.bin_midpoints, self.hist)
+        
 
         # histogram line and position label
         self.hist_line = pg.InfiniteLine(bounds=(self.bin_edges[0], self.bin_edges[-1]), movable=True)
@@ -349,6 +352,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         self.histogram.addItem(self.hist_line)
         self.histogram.addItem(self.hist_graph)
         self.histogram.addItem(self.hist_line_label)
+        #self.histogram.addItem(pg.RectROI(pos=(10,5), size=(100,20), pen=pg.mkPen('g')))
 
         # Mouse interaction
         self.mousepnt: Union[None, QtCore.QPointF] = QtCore.QPointF(0, 0)

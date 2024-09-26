@@ -301,7 +301,7 @@ class RegularDataArray(object):
     def mean(self, axes):
         newdims = list(self.shape)
         if not isinstance(axes, Iterable):
-            axes = (axes,)
+            axes = (axes)
         for ax in axes:
             newdims[ax] = 1
         coord_min = [self.coord_min[ax] if ax not in axes else (self.coord_max[ax] + self.coord_min[ax])/2

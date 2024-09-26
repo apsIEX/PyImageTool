@@ -1,13 +1,17 @@
+from functools import partial
+
+import numpy as np
+
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtWidgets, QtCore
-import warnings
-import numpy as np
-from functools import partial
+
+from PyQt5.QtWidgets import QMessageBox
 
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps import CMap
 from pyimagetool.pgwidgets import ImageBase
 from pyimagetool.CMapEditor import CMapDialog
+from pyimagetool.qtwidgets.RegionOfInterest import imgROI
 
 
 class ImageSlice(ImageBase):
@@ -28,6 +32,26 @@ class ImageSlice(ImageBase):
         self.cmap_reset_action = QtWidgets.QAction('Reset')
         self.cmap_reset_action.triggered.connect(self.cmap_reset)
         self.cmap_menu.addAction(self.cmap_reset_action)
+
+
+# -------------
+        # ROI menu
+        # -------------
+        #had dat
+        self.imgROI = imgROI()
+        self.roi_menu = QtWidgets.QMenu('ROI Map')
+
+        self.roi_test_stat = QtWidgets.QAction('Stats')
+        self.roi_test_stat.triggered.connect(self.showDialog_roi_stats)
+        self.roi_menu.addAction(self.roi_test_stat)
+
+        self.roi_export_action = QtWidgets.QAction('Export')
+        self.roi_export_action.triggered.connect(self.roi_export_method)
+        self.roi_menu.addAction(self.roi_export_action)
+
+        self.menu.addMenu(self.roi_menu)
+
+
         # Scale to view
         self.cmap_to_view_action = QtWidgets.QAction('Scale to view')
         self.cmap_to_view_action.triggered.connect(self.cmap_to_range)
@@ -51,7 +75,9 @@ class ImageSlice(ImageBase):
         self.cmap_menu.addAction(self.edit_cmap_action)
         self.menu.addMenu(self.cmap_menu)
 
-        # self.cmap_editor = QtWidgets.QWidget()
+        self.cmap_editor = QtWidgets.QWidget() #AP removed comment to run
+        # everything that will happen in edit cmap comes from the Class CMapEditor
+        #maybe it should be written as self.cmap_CMapEditor()
         self.build_cmap_form()
 
     def edit_cmap(self):
@@ -61,13 +87,24 @@ class ImageSlice(ImageBase):
             lut = dialog.widget.get_lut()
             self.img.setLookupTable(lut)
 
-    def build_cmap_form(self):
+    def build_cmap_form(self):        
         pass
 
     def cmap_reset(self):
         self.img.setLookupTable(self.baselut)
         self.img.setLevels([np.min(self.data.values), np.max(self.data.values)])
 
+    def roi_test(self):
+        print("Test works")
+
+   
+
+    def roi_export_method(self):
+            print("export button works")
+            self.imgROI.export()
+            #self.imgROI.norm_data()
+        
+   
     def cmap_to_range(self):
         [[xmin, xmax], [ymin, ymax]] = self.vb.viewRange()
         mat = self.data.sel(slice(xmin, xmax), slice(ymin, ymax)).values
@@ -75,6 +112,21 @@ class ImageSlice(ImageBase):
             return
         self.img.setLevels([np.min(mat), np.max(mat)])
 
+    def showDialog_roi_stats(self):
+        msgBox = QMessageBox()
+        #msgBox.setIcon(QMessageBox.Information)
+        message = self.imgROI.stats_message()
+        msgBox.setText(message)
+        msgBox.setWindowTitle("QMessageBox ROI Stats")
+        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msgBox.buttonClicked.connect(msgButtonClick)
+
+        returnValue = msgBox.exec()
+        if returnValue == QMessageBox.Ok:
+            print('OK clicked')
+   
+def msgButtonClick(i):
+   print("Button clicked is:",i.text())
 
 def test():
     import sys
@@ -97,3 +149,4 @@ def test():
 
     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
         QtGui.QApplication.instance().exec_()
+

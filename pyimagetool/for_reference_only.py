@@ -30,10 +30,10 @@ class ImageToolWidget(QtWidgets.QWidget):
         self.layout().addWidget(self.info_bar)
         if pos is None:
             self._pos = np.copy(self.data.coord_min)
-            self._idx = np.zeros(self.data.dims, dtype=np.int)
+            self._idx = np.zeros(self.data.dims, dtype=np.int32)
         else:
             self._pos = pos
-            self._idx = np.round((pos - self.data.coord_min)/self.data.delta).astype(np.int)
+            self._idx = np.round((pos - self.data.coord_min)/self.data.delta).astype(np.int32)
         self.pos_subscribers = [[], [], []]
         self.ct = np.array([])
         self.ct_name = ''
@@ -539,7 +539,7 @@ class ImageToolWidget(QtWidgets.QWidget):
             pnt = self.pos
             pnt[0] = mousepnt.x()
             pnt[1] = mousepnt.y()
-            idx = np.round((pnt - self.data.coord_min)/self.data.delta).astype(np.int)
+            idx = np.round((pnt - self.data.coord_min)/self.data.delta).astype(np.int32)
             if self.data.dims == 2:
                 self.status_bar.showMessage("{0:#.3g} : x = {1:#.3g}, y = {2:#.3g} [{3:d},{4:d}]".format(self.data.mat[tuple(idx)], *tuple(pnt), *tuple(idx)))
             elif self.data.dims == 3:
