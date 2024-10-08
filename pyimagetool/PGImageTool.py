@@ -3,21 +3,15 @@ from typing import Dict, List, Tuple, Union
 from functools import partial
 from collections.abc import Iterable
 import pyqtgraph as pg
-<<<<<<< HEAD
 from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps import CMap
 from pyimagetool.DataModel import ValueLimitedModel
-=======
 from pyqtgraph.Qt import QtGui, QtCore
 
 from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 from PyQt5.QtWidgets import QMessageBox
-from .DataMatrix import RegularDataArray
-from .cmaps import CMap
-from .DataModel import ValueLimitedModel
->>>>>>> db06e6d4280aedfacb58e75d873176c9e7a56177
 from pyimagetool.pgwidgets.BinningLine import BinningLine
 from pyimagetool.pgwidgets.ImageSlice import ImageSlice
 from pyimagetool.qtwidgets.RegionOfInterest import imgROI

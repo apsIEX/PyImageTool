@@ -6,6 +6,7 @@ from pyimagetool.imagetool_wrapper import IT_WRAPPER
 __all__ = ['ImageTool', 'RegularDataArray']
 
 tools = IT_WRAPPER()
+
 def imagetool(data):
     from pyqtgraph.Qt import QtCore, QtWidgets, QtGui
     import sys
