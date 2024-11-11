@@ -3,7 +3,7 @@ from pyimagetool.ImageTool import ImageTool
 from pyimagetool.PGImageTool import PGImageTool
 from pyimagetool.imagetool_wrapper import IT_WRAPPER
 
-__all__ = ['ImageTool', 'RegularDataArray']
+__all__ = ['ImageTool', 'RegularDataArray', 'tools']
 
 tools = IT_WRAPPER()
 

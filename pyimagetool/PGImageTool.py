@@ -49,9 +49,6 @@ class PGImageTool(pg.GraphicsLayoutWidget):
 
         self._signal_proxies: List[pg.SignalProxy] = []  # a list of created signal proxies to be held in memory
 
-        #defined class ROI 
-        #self.imgROI: imgROI = imgROI(data)
-
         # Properties for color map
         self.ct: np.array = np.array([])
         self.ct_name: str = 'blue_orange'
@@ -259,7 +256,6 @@ class PGImageTool(pg.GraphicsLayoutWidget):
 
             #adding ROI   
             img_ax.imgROI.set_img_data(img_ax.data)  
-            #Fimg_ax.imgROI.set_reduced_data(img_ax.data)  
             img_ax.imgROI.roi.addScaleHandle([0, 0.5], [0.5, 0.5])
             img_ax.imgROI.roi.addScaleHandle((0.5,1), (0.5,0.5))
             img_ax.imgROI.roi.addRotateHandle([1, 0.5], [0.5, 0.5])
@@ -502,52 +498,3 @@ class Cursor:
             self.set_index(i, 0)
             #self.set_binwidth_i(i, 1)
 
-# #JM
-# class ROI(pg.ROI):
-#     """An object that holds a list of cMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())urrent index and position of the cursor location. Warning: this function
-#     will raise a list indexing error if you access y, z, or t variables on data which does not have that as a
-#     dimension.
-#     """
-#     def __init__(self, data: RegularDataArray):
-#         """
-#         :param data: Regular spaced data, which will be used to calculate how to transform axis to coordinate
-#         """
-#         self.data = data
-#         self._index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
-#         self._pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
-#                                               for cmin, cmax in zip(data.coord_min, data.coord_max)]
-#         self._size_index: List[ValueLimitedModel] = [ValueLimitedModel(0, 0, imax) for imax in np.array(data.shape) - 1]
-#         self._size_pos: List[ValueLimitedModel] = [ValueLimitedModel(cmin, cmin, cmax)
-#                                               for cmin, cmax in zip(data.coord_min, data.coord_max)]
-        
-#         #self.roi = pg.ROI((700,50),(100,20), pen = 'g')
-#         #self.roi = pg.ROI((self._index[0],self._index[1]),(self._size_index[0],self._size_index[1]), pen = 'g')
-
-#     def reset(self, data=None): #to be modified, copied from cursor
-#         if data is not None:
-#             self.data = data
-#             for i in range(self.data.ndim):
-#                 self._index[i]._lower_lim = 0
-#                 self._index[i]._upper_lim = self.data.shape[i] - 1
-#                 self._pos[i]._lower_lim = self.data.coord_min[i]
-#                 self._pos[i]._upper_MessageBox.information(self,"Stats", img_ax.imgROI.stats_message())lim = self.data.coord_max[i]
-#         for i in range(self.data.ndim):
-#             self.set_index(i, 0)
-
-#     @property
-#     def pos(self):
-#         return self._pos
-
-#     @propertyMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())
-#     def index(self):
-#         return self._index
-    
-#     @property
-#     def size_pos(self):
-#         return self._size_pos
-
-#     @property
-#     def size_index(self):
-#         return self._size_index
-    
-#     #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])

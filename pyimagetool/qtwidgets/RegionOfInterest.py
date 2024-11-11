@@ -7,15 +7,11 @@ import PyQt5 as pq5
 from pyqtgraph.Qt import QtGui, QtCore
 #from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
-#from pyimagetool import PGImageTool
 from PyQt5.QtWidgets import QMessageBox
 from pyimagetool.DataMatrix import RegularDataArray
-#from pyimagetool.cmaps import CMap
 from pyimagetool.DataModel import ValueLimitedModel
-#from pyimagetool.pgwidgets.BinningLine import BinningLine
-#from pyimagetool.pgwidgets.ImageSlice import ImageSlice         ####CIRCULAR IMPORT
 from typing import Dict, List, Tuple, Union
-from pyimagetool import ImageTool
+
 
 
 class imgROI():
@@ -32,17 +28,6 @@ class imgROI():
         self._img_data = None #loaded data
         self.roi = None
 
-        #get initial roi position and size
-
-        
-        #print('_index',_index)
-        #print('_pos',_pos)
-        #print('_size_index',_size_index)
-        #print('_size_pos',_size_pos)
-        
-        
-        
-        #self.roi = pg.ROI((self._index[0],self._index[1]),(self._size_index[0],self._size_index[1]), pen = 'g')
 
     def set_img_data(self, img_data: RegularDataArray):
         self._img_data = img_data
@@ -88,7 +73,8 @@ class imgROI():
             pos_coord = ((x1,y1),(x2,y2),(x3,y3),(x4,y4))
             pos_index = ((x1_index,x2_index),(y1_index,y4_index))
         """
-        debug = True
+        debug = False
+
         def find_nearest(arr,val):
             index = np.absolute(arr-val).argmin()
             return index
