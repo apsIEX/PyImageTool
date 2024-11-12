@@ -6,7 +6,7 @@ import pyimagetool as it
 # - connect the cursors between two imagetools
 # - export dialog and add to menu
 # - 
-class IT_WRAPPER:
+class IT_container:
     """
     Container for managing multiple imagetools
     """
@@ -172,7 +172,7 @@ class IT_WRAPPER:
             v_next = 0
             base = 'tool_'
         else:    
-            print(type(v_array),v_array)            
+            #print(type(v_array),v_array)            
             v_max = np.max(v_array)
             v_next = int(v_max) + 1
             base = 'tool_'
@@ -201,6 +201,7 @@ class IT_WRAPPER:
         name = self._append_instance(obj)
         obj.setWindowTitle(name)
         obj.show()
+        print('Showing '+name)
         return(obj)
     
     def export_dictionary(self, img_prof):

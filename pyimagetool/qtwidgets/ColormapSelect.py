@@ -1,6 +1,6 @@
 from pyqtgraph.Qt import QtGui, QtCore, QtWidgets
 
-from pyimagetool.cmaps import CMap
+from pyimagetool.cmaps.CMap import CMap
 
 
 class ColormapForm(QtWidgets.QWidget):

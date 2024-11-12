@@ -5,7 +5,7 @@ import pyqtgraph as pg
 import numpy as np
 import warnings
 
-from pyimagetool.widgets import InfoBar
+from pyimagetool.widgets import TabsWidget
 from pyimagetool.PGImageTool import PGImageTool
 from pyimagetool.DataMatrix import RegularDataArray
 
@@ -40,15 +40,17 @@ class ImageTool(QtWidgets.QWidget):
         # Create data
         self.data: RegularDataArray = RegularDataArray(data)
         self.it_layout: int = layout
-        # Create info bar and ImageTool PyQt Widget
-        self.info_bar = InfoBar(self.data, parent=self)
+
+        # Create tabs and ImageTool PyQt Widget
+        #self.info_bar = InfoBar(self.data, parent=self)
+        self.tabs_widget = TabsWidget(self.data, parent=self)
         self.pg_widget = QtWidgets.QWidget()  # widget to hold pyqtgraph graphicslayout
         self.pg_widget.setLayout(QtWidgets.QVBoxLayout())
         self.pg_win = PGImageTool(self.data, layout=layout)  # the pyqtgraph graphicslayout
         self.pg_widget.layout().addWidget(self.pg_win)
         # Build the layout
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.layout().addWidget(self.info_bar)
+        self.layout().addWidget(self.tabs_widget)
         self.layout().addWidget(self.pg_win)
         # Create status bar
         self.status_bar = QtWidgets.QStatusBar(self)
@@ -58,8 +60,8 @@ class ImageTool(QtWidgets.QWidget):
         self.mouse_move_proxy = pg.SignalProxy(self.pg_win.mouse_hover, rateLimit=30, slot=self.update_status_bar)
         self.build_handlers()
         # TODO: update to QT 5.14 and use textActivated signal instead
-        self.info_bar.cmap_combobox.currentTextChanged.connect(self.set_all_cmaps)
-        self.info_bar.transpose_request.connect(self.transpose_data)
+        self.tabs_widget.colors_tab.cmap_combobox.currentTextChanged.connect(self.set_all_cmaps)
+        self.tabs_widget.info_tab.transpose_request.connect(self.transpose_data)
 
     def update_status_bar(self, msg: tuple):
         """Slot for mouse move signal"""
@@ -73,7 +75,7 @@ class ImageTool(QtWidgets.QWidget):
             spinbox.setValue(i)
             spinbox.blockSignals(False)
 
-        for i, sb in enumerate(self.info_bar.cursor_i):
+        for i, sb in enumerate(self.tabs_widget.info_tab.cursor_i):
             sb.valueChanged.connect(partial(self.pg_win.cursor.set_index, i))
             self.pg_win.cursor.index[i].value_set.connect(partial(update_spinbox_view, sb))
 
@@ -87,19 +89,19 @@ class ImageTool(QtWidgets.QWidget):
             doublespinbox.setValue(v)
             doublespinbox.blockSignals(False)
 
-        for i, dsb in enumerate(self.info_bar.cursor_c):
+        for i, dsb in enumerate(self.tabs_widget.info_tab.cursor_c):
             dsb.editingFinished.connect(partial(control_doublespinbox, dsb,
                                                 partial(self.pg_win.cursor.set_pos, i)))
             self.pg_win.cursor.pos[i].value_set.connect(partial(update_doublespinbox_view, dsb))
 
         # Connect binwidth to model
         # -------------------------
-        for i, sb in enumerate(self.info_bar.bin_i):
+        for i, sb in enumerate(self.tabs_widget.bin_tab.bin_i):
             sb.valueChanged.connect(partial(self.pg_win.cursor.set_binwidth_i, i))
             self.pg_win.cursor.binwidth[i].value_set.connect(partial(self.update_binwidth_index_view,
                                                                      sb, i))
 
-        for i, dsb in enumerate(self.info_bar.bin_c):
+        for i, dsb in enumerate(self.tabs_widget.bin_tab.bin_c):
             dsb.editingFinished.connect(partial(control_doublespinbox, dsb,
                                                 partial(self.pg_win.cursor.set_binwidth, i)))
             self.pg_win.cursor.binwidth[i].value_set.connect(partial(update_doublespinbox_view, dsb))
@@ -116,7 +118,7 @@ class ImageTool(QtWidgets.QWidget):
 
         #slider = QtWidgets.QSlider()
         # Create info bar and ImageTool PyQt Widget
-        self.info_bar.reset(self.data)
+        self.tabs_widget.reset(self.data)
         self.pg_win.reset(self.data)
 
     def set_all_cmaps(self, cmap_name: str):

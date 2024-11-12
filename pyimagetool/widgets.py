@@ -5,7 +5,82 @@ from functools import partial
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps.CMap import CMap, default_cmap
 
-class InfoBar(QtWidgets.QWidget):
+class TabsWidget(QtWidgets.QWidget):
+    """
+    """
+    def __init__(self,data: RegularDataArray, parent=None):
+        super(QtWidgets.QWidget, self).__init__(parent)
+        self.data = data
+
+        self.layout = QtWidgets.QHBoxLayout(self)
+        
+        # Initialize tab screen
+        self.tabs = QtWidgets.QTabWidget()
+        self.tab1 = QtWidgets.QWidget()
+        self.tab2 = QtWidgets.QWidget()
+        self.tab3 = QtWidgets.QWidget()
+        self.tab4 = QtWidgets.QWidget()
+        #self.tabs.resize(300,200)
+              
+        # Add tab1 => Info
+        self.tabs.addTab(self.tab1,"Info")
+        self.info_tab = InfoTab(self.data, parent=self)
+        self.tab1.layout = QtWidgets.QHBoxLayout()
+        self.tab1.setLayout(self.tab1.layout)
+        self.tab1.layout.addWidget(self.info_tab.cursor_group_box)
+        
+        # Add tab2 => Colors
+        self.tabs.addTab(self.tab2,"Colors")
+        self.colors_tab = ColorsTab(parent=self)
+        self.tab2.layout = QtWidgets.QHBoxLayout()
+        self.tab2.setLayout(self.tab2.layout)
+        self.tab2.layout.addWidget(self.colors_tab.cmap_group_box)
+
+        # Add tab3 => Axes
+        self.tabs.addTab(self.tab3,"Axes")
+        self.axes_tab = AxesTab(self.data, parent=self)
+        self.tab3.layout = QtWidgets.QHBoxLayout()
+        self.tab3.setLayout(self.tab3.layout)
+        self.tab3.layout.addWidget(self.axes_tab.axes_group_box)
+
+         # Add tab4 => Bin
+        self.tabs.addTab(self.tab4,"Bin")
+        self.bin_tab = BinTab(self.data, parent=self)
+        self.tab4.layout = QtWidgets.QHBoxLayout()
+        self.tab4.setLayout(self.tab4.layout)
+        self.tab4.layout.addWidget(self.bin_tab.bin_group_box)
+        
+        # Add tabs to widget
+        self.layout.addWidget(self.tabs)
+        self.setLayout(self.layout)
+
+        # # Add the group boxes to create this widget
+        # self.layout().addWidget(self.cursor_group_box)
+        # self.layout().addWidget(self.bin_group_box)
+        # self.final_column.addWidget(self.data_manip_group_box)
+        # self.final_column.addWidget(self.cmap_group_box)
+        # self.layout().addLayout(self.final_column)
+        # # self.layout().addWidget(self.cmap_group_box)
+
+        
+    @QtCore.pyqtSlot()
+    def on_click(self):
+        print("\n")
+        for currentQTableWidgetItem in self.tableWidget.selectedItems():
+            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+
+    def reset(self):
+        data = self.data
+        for i in range(data.ndim):
+            self.cursor_i[i].setRange(0, data.shape[i] - 1)
+            self.cursor_c[i].setRange(data.coord_min[i], data.coord_max[i])
+            self.bin_i[i].setRange(1, data.shape[i])
+            self.bin_c[i].setRange(data.delta[i], data.coord_max[i] - data.coord_min[i] + data.delta[i])
+            self.cursor_labels[i].setText(data.dims[i])
+            self.bin_labels[i].setText(data.dims[i])
+
+
+class InfoTab(QtWidgets.QWidget):
     """Based on the input data, create a suitable info bar (maybe with tabs?)"""
     transpose_request = QtCore.Signal(object)
 
@@ -14,8 +89,10 @@ class InfoBar(QtWidgets.QWidget):
         self.data = data
         if data.ndim > 4:
             raise ValueError("Input data for more than 4 dimensions not supported")
+        
         # The main layout for this widget
-        self.setLayout(QtWidgets.QHBoxLayout())
+        #self.setLayout(QtWidgets.QHBoxLayout())
+
         # Create the cursor group box
         self.cursor_group_box = QtWidgets.QGroupBox("Cursor Info")
         self.cursor_grid_layout = QtWidgets.QGridLayout()
@@ -27,7 +104,9 @@ class InfoBar(QtWidgets.QWidget):
         self.cursor_labels = []  # labels for each cursor position
         self.cursor_i = []  # cursor position as index into data
         self.cursor_c = []  # cursor position in coordinate
+        
         # TODO: set minimize size policy for the spinbox labels for Qt 5.14
+        
         for i in range(data.ndim):
             label = QtWidgets.QLabel(self.data.dims[i])
             label.setAlignment(QtCore.Qt.AlignCenter)
@@ -42,6 +121,36 @@ class InfoBar(QtWidgets.QWidget):
             self.cursor_labels.append(label)
             self.cursor_i.append(i_sb)
             self.cursor_c.append(c_sb)
+
+
+class AxesTab(QtWidgets.QWidget):
+    """ """
+    def __init__(self, data: RegularDataArray, parent=None):
+        super().__init__(parent)
+        
+        self.data = data
+        # Create the data edit group box
+        self.axes_group_box = QtWidgets.QGroupBox("Axes")
+        self.axes_layout = QtWidgets.QHBoxLayout()
+        self.axes_group_box.setLayout(self.axes_layout)
+        self.transpose_button = QtWidgets.QPushButton('Transpose')
+        self.transpose_button.clicked.connect(self.transpose_clicked)
+        self.axes_group_box.layout().addWidget(self.transpose_button)
+        self.axes_group_box.layout().addStretch(0)
+
+    def transpose_clicked(self):
+        dialog = TransposeDialog(self.data)
+        r = dialog.exec()
+        if r == 1:
+            tr = dialog.widget.get_transpose()
+            self.transpose_request.emit(tr)
+
+class BinTab(QtWidgets.QWidget):
+    """Based on the input data, create a suitable info bar (maybe with tabs?)"""
+
+    def __init__(self, data: RegularDataArray, parent=None):
+        super().__init__(parent)
+        self.data = data
 
         # Create the binning group box
         self.bin_group_box = QtWidgets.QGroupBox("Binning")
@@ -67,14 +176,22 @@ class InfoBar(QtWidgets.QWidget):
             self.bin_c.append(c_sb)
         self.final_column = QtWidgets.QVBoxLayout()
 
-        # Create the data edit group box
-        self.data_manip_group_box = QtWidgets.QGroupBox("Data Manipulation")
-        self.data_manip_group_box.setLayout(QtWidgets.QHBoxLayout())
-        self.transpose_button = QtWidgets.QPushButton('Transpose')
-        self.transpose_button.clicked.connect(self.transpose_clicked)
-        self.data_manip_group_box.layout().addWidget(self.transpose_button)
-        self.data_manip_group_box.layout().addStretch(0)
 
+
+
+class NewTab(QtWidgets.QWidget):
+    """ """
+
+    def __init__(self, data: RegularDataArray, parent=None):
+        super().__init__(parent)
+
+
+class ColorsTab(QtWidgets.QWidget):
+    """ """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
         # Create the colormap group box
         self.cmap_group_box = QtWidgets.QGroupBox("Colormap")
         self.cmap_form_layout = QtWidgets.QFormLayout()
@@ -87,30 +204,7 @@ class InfoBar(QtWidgets.QWidget):
             self.cmap_combobox.addItem(CMap().load_icon(cmap), cmap)
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
         self.cmap_combobox.setCurrentText(default_cmap)
-        # Add the group boxes to create this widget
-        self.layout().addWidget(self.cursor_group_box)
-        self.layout().addWidget(self.bin_group_box)
-        self.final_column.addWidget(self.data_manip_group_box)
-        self.final_column.addWidget(self.cmap_group_box)
-        self.layout().addLayout(self.final_column)
-        # self.layout().addWidget(self.cmap_group_box)
 
-    def reset(self, data: RegularDataArray):
-        self.data = data
-        for i in range(data.ndim):
-            self.cursor_i[i].setRange(0, data.shape[i] - 1)
-            self.cursor_c[i].setRange(data.coord_min[i], data.coord_max[i])
-            self.bin_i[i].setRange(1, data.shape[i])
-            self.bin_c[i].setRange(data.delta[i], data.coord_max[i] - data.coord_min[i] + data.delta[i])
-            self.cursor_labels[i].setText(data.dims[i])
-            self.bin_labels[i].setText(data.dims[i])
-
-    def transpose_clicked(self):
-        dialog = TransposeDialog(self.data)
-        r = dialog.exec()
-        if r == 1:
-            tr = dialog.widget.get_transpose()
-            self.transpose_request.emit(tr)
 
 
 class CMapEditForm:
@@ -136,7 +230,8 @@ class TransposeDialog(QtWidgets.QDialog):
         super().__init__(parent)
         self.setModal(True)
         self.widget = TransposeAxesWidget(data, parent=self)
-        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self.layout)
         self.layout().addWidget(self.widget)
         self.widget.ok_button.clicked.connect(self.accept)
         self.widget.cancel_button.clicked.connect(self.reject)
