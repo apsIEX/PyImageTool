@@ -3,7 +3,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtWidgets, QtCore
 import numpy as np
 
-from pyimagetool.cmaps import CMap
+from pyimagetool.cmaps.CMap import CMap, default_cmap
 from pyimagetool.DataMatrix import RegularDataArray
 
 
@@ -17,7 +17,7 @@ class ImageBase(pg.PlotItem):
         """
         super().__init__(**kwargs)
 
-        self.baselut = CMap().load_ct(kwargs.pop('lut', 'blue_orange'))
+        self.baselut = CMap().load_ct(kwargs.pop('lut', default_cmap))
         self.lut = np.copy(self.baselut)
 
         self.img = pg.ImageItem(parent=self, lut=self.lut)

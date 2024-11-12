@@ -99,7 +99,7 @@ class CMapEditor(QtWidgets.QWidget):
         #         cmap_name = os.path.splitext(filename)[0]
         #         self.cmap_combobox.addItem(QtGui.QIcon('cmaps' + os.sep + cmap_name + '.jpg'), cmap_name)
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
-        self.cmap_combobox.setCurrentText('blue_orange')
+        self.cmap_combobox.setCurrentText('viridis')
         def update_cmap(cmap_name):
             self.pg_win.load_ct(cmap_name)
             self.pg_win.update()
@@ -116,7 +116,7 @@ class CMapEditor(QtWidgets.QWidget):
         self.load_map_button.clicked.connect(self.load_cmap_clicked)
 
         # Initialize
-        update_cmap('blue_orange')
+        update_cmap('viridis')
 
         # Add widgets
         self.header_layout.addLayout(self.cmap_norm_layout)
@@ -263,8 +263,8 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         super().__init__(parent)
 
         self.lut = np.empty((256, 3), dtype=np.uint8)
-        self.ct = CMap().load_ct('blue_orange')
-        self.ct_name = 'blue_orange'
+        self.ct = CMap().load_ct('viridis')
+        self.ct_name = 'viridis'
         self.gamma = 1
         self.cmap_piecewise = False
 

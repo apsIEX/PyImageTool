@@ -6,7 +6,7 @@ import pyqtgraph as pg
 from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
 from pyimagetool.DataMatrix import RegularDataArray
-from pyimagetool.cmaps import CMap
+from pyimagetool.cmaps.CMap import CMap, default_cmap
 from pyimagetool.DataModel import ValueLimitedModel
 from pyqtgraph.Qt import QtGui, QtCore
 
@@ -51,7 +51,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
 
         # Properties for color map
         self.ct: np.array = np.array([])
-        self.ct_name: str = 'blue_orange'
+        self.ct_name: str = default_cmap
 
         # Properties for tracking the mouse
         self.mouse_pos: pg.Qt.QtCore.QPointF = pg.Qt.QtCore.QPointF(0, 0)
@@ -263,11 +263,6 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             img_ax.addItem(img_ax.imgROI.roi)
             img_ax.autoRange()
             
-            QMessageBox.information(self,"Stats", img_ax.imgROI.stats_message())
-            
-            #roi.addRotateHandle([0.5, 0.5], [0.5, 0.5])'''
-            #img_ax.addItem(pg.ROI(pos=(-8, 14), size=(100,20), pen=pg.mkPen('g')))
-            
 
     def init_data(self):
         for key, (plot_item, orientation) in self.lineplots_data.items():
@@ -290,10 +285,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
                 if k != i and k != j:
                     self.cursor.index[k].value_set.connect(partial(self.update_img, i, j, img_ax))
                     self.cursor.binwidth[k].value_set.connect(partial(self.update_img, i, j, img_ax))
-        #set ROI JM
-        print('\nPGImageTool.init_data')
-        for key, img_ax in self.imgs.items():
-            print(key)
+
 
     def update_img(self, i: int, j: int, img: ImageSlice, _=None):
         """Template function for creating image update callback functions.
@@ -313,7 +305,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         else:
             lineplot.setData(x.values, self.data.axes[index])
 
-    def load_ct(self, cmap_name: str = 'viridis'):
+    def load_ct(self, cmap_name: str = default_cmap):
         """
         Supported color maps:
         - viridis

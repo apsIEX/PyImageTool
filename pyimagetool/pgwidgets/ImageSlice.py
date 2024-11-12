@@ -8,7 +8,7 @@ from pyqtgraph.Qt import QtGui, QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox
 
 from pyimagetool.DataMatrix import RegularDataArray
-from pyimagetool.cmaps import CMap
+from pyimagetool.cmaps.CMap import CMap, default_cmap
 from pyimagetool.pgwidgets import ImageBase
 from pyimagetool.CMapEditor import CMapDialog
 from pyimagetool.qtwidgets.RegionOfInterest import imgROI
@@ -32,12 +32,15 @@ class ImageSlice(ImageBase):
         self.cmap_reset_action = QtWidgets.QAction('Reset')
         self.cmap_reset_action.triggered.connect(self.cmap_reset)
         self.cmap_menu.addAction(self.cmap_reset_action)
+        # Reverse Colormap
+        self.cmap_reverse_action = QtWidgets.QAction('Reverse Colormap')
+        self.cmap_reverse_action.triggered.connect(self.cmap_reverse)
+        self.cmap_menu.addAction(self.cmap_reverse_action)
 
 
-# -------------
+        # -------------
         # ROI menu
         # -------------
-        #had dat
         self.imgROI = imgROI()
         self.roi_menu = QtWidgets.QMenu('ROI Map')
 
@@ -51,15 +54,15 @@ class ImageSlice(ImageBase):
 
         self.menu.addMenu(self.roi_menu)
 
-
         # Scale to view
         self.cmap_to_view_action = QtWidgets.QAction('Scale to view')
         self.cmap_to_view_action.triggered.connect(self.cmap_to_range)
         self.cmap_menu.addAction(self.cmap_to_view_action)
+        
         # Change colormap
         self.change_cmap_menu = QtWidgets.QMenu('Change colormap')
         self.change_cmap_actions = []
-        def callback_prototype(imgbase, cmap_name="viridis"):
+        def callback_prototype(imgbase, cmap_name=default_cmap):
             ct = CMap().load_ct(cmap_name)
             imgbase.baselut = ct
             imgbase.set_lut(ct)
@@ -69,6 +72,7 @@ class ImageSlice(ImageBase):
             self.change_cmap_actions.append(action)
             self.change_cmap_menu.addAction(action)
         self.cmap_menu.addMenu(self.change_cmap_menu)
+
         # Edit colormap
         self.edit_cmap_action = QtWidgets.QAction('Edit Color Map')
         self.edit_cmap_action.triggered.connect(self.edit_cmap)
@@ -94,10 +98,11 @@ class ImageSlice(ImageBase):
         self.img.setLookupTable(self.baselut)
         self.img.setLevels([np.min(self.data.values), np.max(self.data.values)])
 
-    def roi_test(self):
-        print("Test works")
-
-   
+    def cmap_reverse(self):
+        colors = self.lut
+        colors_r = np.array(list(reversed(colors)))
+        print(colors[0],colors_r[0])
+        self.img.setLookupTable(colors_r)
 
     def roi_export_method(self):
             print("export button works")
@@ -114,7 +119,6 @@ class ImageSlice(ImageBase):
 
     def showDialog_roi_stats(self):
         msgBox = QMessageBox()
-        #msgBox.setIcon(QMessageBox.Information)
         message = self.imgROI.stats_message()
         msgBox.setText(message)
         msgBox.setWindowTitle("QMessageBox ROI Stats")

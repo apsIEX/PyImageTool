@@ -1,1 +1,1 @@
-from .CMap import CMap
+from pyimagetool.cmaps.CMap import CMap

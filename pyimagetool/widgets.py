@@ -3,8 +3,7 @@ from typing import List
 from functools import partial
 
 from pyimagetool.DataMatrix import RegularDataArray
-from pyimagetool.cmaps import CMap
-
+from pyimagetool.cmaps.CMap import CMap, default_cmap
 
 class InfoBar(QtWidgets.QWidget):
     """Based on the input data, create a suitable info bar (maybe with tabs?)"""
@@ -43,6 +42,7 @@ class InfoBar(QtWidgets.QWidget):
             self.cursor_labels.append(label)
             self.cursor_i.append(i_sb)
             self.cursor_c.append(c_sb)
+
         # Create the binning group box
         self.bin_group_box = QtWidgets.QGroupBox("Binning")
         self.bin_grid_layout = QtWidgets.QGridLayout()
@@ -66,6 +66,7 @@ class InfoBar(QtWidgets.QWidget):
             self.bin_i.append(i_sb)
             self.bin_c.append(c_sb)
         self.final_column = QtWidgets.QVBoxLayout()
+
         # Create the data edit group box
         self.data_manip_group_box = QtWidgets.QGroupBox("Data Manipulation")
         self.data_manip_group_box.setLayout(QtWidgets.QHBoxLayout())
@@ -73,6 +74,7 @@ class InfoBar(QtWidgets.QWidget):
         self.transpose_button.clicked.connect(self.transpose_clicked)
         self.data_manip_group_box.layout().addWidget(self.transpose_button)
         self.data_manip_group_box.layout().addStretch(0)
+
         # Create the colormap group box
         self.cmap_group_box = QtWidgets.QGroupBox("Colormap")
         self.cmap_form_layout = QtWidgets.QFormLayout()
@@ -84,7 +86,7 @@ class InfoBar(QtWidgets.QWidget):
         for cmap in CMap().cmaps:
             self.cmap_combobox.addItem(CMap().load_icon(cmap), cmap)
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
-        self.cmap_combobox.setCurrentText('blue_orange')
+        self.cmap_combobox.setCurrentText(default_cmap)
         # Add the group boxes to create this widget
         self.layout().addWidget(self.cursor_group_box)
         self.layout().addWidget(self.bin_group_box)

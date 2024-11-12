@@ -8,7 +8,7 @@ with open(Path(setup_path, 'Readme.md'), "r") as fh:
 
 setuptools.setup(
     name="pyimagetool",
-    version="1.0",
+    version="1.1",
     author="Kyle Gordon",
     author_email="kgord831@gmail.com",
     description="Python Image Tool for multidimensional analysis",

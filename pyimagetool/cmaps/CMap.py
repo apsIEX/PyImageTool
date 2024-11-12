@@ -13,7 +13,9 @@ except ImportError:
     qt = None
 
 
-#Colormaps need to be 256,3
+#Colormaps
+# shape = (256,3)
+# data ranges: 0 to 256 (np ranges: 0 to 1)
 
 
 CET_NAMES = {
@@ -65,6 +67,8 @@ IGOR_NAMES = {
 
 modulepath = Path(__file__).parent
 
+global default_cmap
+default_cmap = 'blue_orange'
 
 class CMap:
     _instance = None
@@ -93,7 +97,7 @@ class CMap:
         self.pixmaps = {}
         self.icons = {}
 
-    def load_ct(self, name='viridis'):
+    def load_ct(self, name='default_cmap'):
         if name in self.colortables:
             return self.colortables[name]
         elif name in self.cmaps:
@@ -104,7 +108,7 @@ class CMap:
         else:
             raise FileNotFoundError(f'Colormap "{name}" is not loaded, try reloading.')
 
-    def load_icon(self, name='viridis'):
+    def load_icon(self, name='default_cmap'):
         if qt:
             if name in self.icons:
                 return self.icons[name]
@@ -119,7 +123,7 @@ class CMap:
             raise ImportError("Failed to import pyqtgraph, method load_icon() not available.")
 
             np.save(newpath, dat)
-    def load_pixmap(self, name='viridis'):
+    def load_pixmap(self, name='default_cmap'):
         if qt:
             if name in self.pixmaps:
                 return self.pixmaps[name]
