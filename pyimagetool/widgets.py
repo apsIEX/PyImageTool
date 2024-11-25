@@ -1,3 +1,4 @@
+import numpy as np
 from pyqtgraph.Qt import QtCore, QtWidgets
 from typing import List
 from functools import partial
@@ -34,7 +35,7 @@ class TabsWidget(QtWidgets.QWidget):
         self.colors_tab = ColorsTab(parent=self)
         self.tab2.layout = QtWidgets.QHBoxLayout()
         self.tab2.setLayout(self.tab2.layout)
-        self.tab2.layout.addWidget(self.colors_tab.cmap_group_box)
+        self.tab2.layout.addLayout(self.colors_tab.colors_layout)
 
         # Add tab3 => Axes
         self.tabs.addTab(self.tab3,"Axes")
@@ -43,7 +44,7 @@ class TabsWidget(QtWidgets.QWidget):
         self.tab3.setLayout(self.tab3.layout)
         self.tab3.layout.addWidget(self.axes_tab.axes_group_box)
 
-         # Add tab4 => Bin
+        # Add tab4 => Bin
         self.tabs.addTab(self.tab4,"Bin")
         self.bin_tab = BinTab(self.data, parent=self)
         self.tab4.layout = QtWidgets.QHBoxLayout()
@@ -53,14 +54,6 @@ class TabsWidget(QtWidgets.QWidget):
         # Add tabs to widget
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
-
-        # # Add the group boxes to create this widget
-        # self.layout().addWidget(self.cursor_group_box)
-        # self.layout().addWidget(self.bin_group_box)
-        # self.final_column.addWidget(self.data_manip_group_box)
-        # self.final_column.addWidget(self.cmap_group_box)
-        # self.layout().addLayout(self.final_column)
-        # # self.layout().addWidget(self.cmap_group_box)
 
         
     @QtCore.pyqtSlot()
@@ -176,34 +169,87 @@ class BinTab(QtWidgets.QWidget):
             self.bin_c.append(c_sb)
         self.final_column = QtWidgets.QVBoxLayout()
 
-
-
-
-class NewTab(QtWidgets.QWidget):
-    """ """
-
-    def __init__(self, data: RegularDataArray, parent=None):
-        super().__init__(parent)
-
-
 class ColorsTab(QtWidgets.QWidget):
     """ """
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        #main layout
+        self.colors_layout = QtWidgets.QHBoxLayout()
         
-        # Create the colormap group box
-        self.cmap_group_box = QtWidgets.QGroupBox("Colormap")
-        self.cmap_form_layout = QtWidgets.QFormLayout()
-        self.cmap_group_box.setLayout(self.cmap_form_layout)
-        self.cmap_label = QtWidgets.QLabel("Set all Colormaps")
+        #gamma layout and widget
+        self.gamma_value_layout = QtWidgets.QHBoxLayout()
+        self.gamma_label = QtWidgets.QLabel('Gamma')
+        # value
+        self.gamma_value_layout.addWidget(self.gamma_label)
+        # spinbox
+        self.gamma_spinbox = QtWidgets.QDoubleSpinBox()
+        self.gamma_spinbox.setMinimumSize(50, 0)
+        self.gamma_spinbox.setRange(10**-2, 10**2)
+        self.gamma_spinbox.setValue(1)
+        self.gamma_spinbox.setSingleStep(0.1)
+        self.gamma_spinbox.valueChanged.connect(self.gamma_slider_slot)
+        self.gamma_value_layout.addWidget(self.gamma_spinbox)
+        #slider
+        self.gamma_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.gamma_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        gamma_min = -20
+        gamma_max = 20
+        gamma_step = 1
+        self.gamma_slider.setMinimum(gamma_min)
+        self.gamma_slider.setMaximum(gamma_max)
+        self.gamma_slider.setValue(0)
+        self.gamma_slider.valueChanged.connect(self.gamma_spinbox_slot)
+        self.gamma_value_layout.addWidget(self.gamma_slider)
+
+        #cmap widgets
+        self.cmap_menu_layout = QtWidgets.QVBoxLayout()   
+        self.reverse_cmap_layout = QtWidgets.QHBoxLayout()
+        #cmap label and reverse     
+        self.cmap_label = QtWidgets.QLabel('Colormaps')
+        self.reverse_cmap_label = QtWidgets.QLabel('Reverse?')
+        self.reverse_cmap_checkbox = QtWidgets.QCheckBox()
+        self.reverse_cmap = False
+        self.reverse_cmap_checkbox.setChecked(self.reverse_cmap)     
+        self.reverse_cmap_layout.addWidget(self.cmap_label)
+        self.reverse_cmap_layout.addWidget(self.reverse_cmap_label)
+        self.reverse_cmap_layout.addWidget(self.reverse_cmap_checkbox)
+        #cmap select 
         self.cmap_combobox = QtWidgets.QComboBox()
-        self.cmap_form_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.cmap_label)
-        self.cmap_form_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.cmap_combobox)
+        self.cmap_combobox.setMinimumSize(150, 0)
+        self.cmap_combobox.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
         for cmap in CMap().cmaps:
             self.cmap_combobox.addItem(CMap().load_icon(cmap), cmap)
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
         self.cmap_combobox.setCurrentText(default_cmap)
+        #action set_all_cmaps is defined in ImageTool
+        #putting it all together
+        self.cmap_menu_layout.addLayout(self.reverse_cmap_layout)
+        self.cmap_menu_layout.addWidget(self.cmap_combobox)
+
+        #add widgets to main
+        self.colors_layout.addLayout(self.gamma_value_layout)
+        self.colors_layout.addLayout(self.cmap_menu_layout)
+
+    #methods
+    def gamma_spinbox_slot(self, slider_value):
+        self.gamma_spinbox.blockSignals(True)
+        self.gamma_spinbox.setValue(10**(slider_value/20))
+        self.gamma_spinbox.blockSignals(False)
+        #self.pg_win.gamma = self.gamma_spinbox.value()
+        #self.pg_win.update()
+
+    def gamma_slider_slot(self):
+        self.gamma_slider.blockSignals(True)
+        self.gamma_slider.setValue(round(20*np.log10(self.gamma_spinbox.value())))
+        self.gamma_slider.blockSignals(False)
+        #self.pg_win.gamma = self.gamma_spinbox.value()
+        #self.pg_win.update()
+    
+    def reverse_cmap_clicked(self):
+
+        pass
 
 
 

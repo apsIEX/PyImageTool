@@ -101,7 +101,6 @@ class ImageSlice(ImageBase):
     def cmap_reverse(self):
         colors = self.lut
         colors_r = np.array(list(reversed(colors)))
-        print(colors[0],colors_r[0])
         self.img.setLookupTable(colors_r)
 
     def roi_export_method(self):

@@ -7,8 +7,8 @@ import numpy as np
 import pickle
 from functools import partial
 
-from .pgwidgets import ImageBase
-from .cmaps import CMap
+from pyimagetool.pgwidgets import ImageBase
+from pyimagetool.cmaps.CMap import CMap, default_cmap
 
 
 class CMapDialog(QtWidgets.QDialog):
@@ -94,12 +94,10 @@ class CMapEditor(QtWidgets.QWidget):
         self.cmap_combobox.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
         for cmap in CMap().cmaps:
             self.cmap_combobox.addItem(CMap().load_icon(cmap), cmap)
-        # for filename in os.listdir('cmaps'):
-        #     if fnmatch.fnmatch(filename, '*.npy'):
-        #         cmap_name = os.path.splitext(filename)[0]
-        #         self.cmap_combobox.addItem(QtGui.QIcon('cmaps' + os.sep + cmap_name + '.jpg'), cmap_name)
+        
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
-        self.cmap_combobox.setCurrentText('viridis')
+        self.cmap_combobox.setCurrentText(default_cmap)
+
         def update_cmap(cmap_name):
             self.pg_win.load_ct(cmap_name)
             self.pg_win.update()
@@ -116,7 +114,7 @@ class CMapEditor(QtWidgets.QWidget):
         self.load_map_button.clicked.connect(self.load_cmap_clicked)
 
         # Initialize
-        update_cmap('viridis')
+        update_cmap(default_cmap)
 
         # Add widgets
         self.header_layout.addLayout(self.cmap_norm_layout)
@@ -381,7 +379,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
             self.hist_cnorm = (np.arange(len(self.hist))/(len(self.hist) - 1))**self.gamma
             self.hist_cnorm_data.setData(self.bin_midpoints, self.hist_cnorm*self.hist.max())
 
-    def load_ct(self, cmap_name: str = 'viridis'):
+    def load_ct(self, cmap_name: str = 'viridis',reverse=False):
         """
         Supported color maps:
         - viridis

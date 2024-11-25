@@ -1,7 +1,7 @@
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.ImageTool import ImageTool
 from pyimagetool.PGImageTool import PGImageTool
-from pyimagetool.imagetool_wrapper import IT_container
+from pyimagetool.imagetool_container import IT_container
 
 __all__ = ['ImageTool', 'RegularDataArray', 'tools']
 

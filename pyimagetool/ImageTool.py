@@ -40,6 +40,8 @@ class ImageTool(QtWidgets.QWidget):
         # Create data
         self.data: RegularDataArray = RegularDataArray(data)
         self.it_layout: int = layout
+        self.cmap_name = ''
+        self.cmap_reverse = False
 
         # Create tabs and ImageTool PyQt Widget
         #self.info_bar = InfoBar(self.data, parent=self)
@@ -60,7 +62,9 @@ class ImageTool(QtWidgets.QWidget):
         self.mouse_move_proxy = pg.SignalProxy(self.pg_win.mouse_hover, rateLimit=30, slot=self.update_status_bar)
         self.build_handlers()
         # TODO: update to QT 5.14 and use textActivated signal instead
-        self.tabs_widget.colors_tab.cmap_combobox.currentTextChanged.connect(self.set_all_cmaps)
+        self.tabs_widget.colors_tab.reverse_cmap_checkbox.clicked.connect(self.set_all_cmaps_reverse)
+        self.tabs_widget.colors_tab.cmap_combobox.currentTextChanged.connect(self.set_all_cmaps_name)#here
+        
         self.tabs_widget.info_tab.transpose_request.connect(self.transpose_data)
 
     def update_status_bar(self, msg: tuple):
@@ -121,8 +125,33 @@ class ImageTool(QtWidgets.QWidget):
         self.tabs_widget.reset(self.data)
         self.pg_win.reset(self.data)
 
-    def set_all_cmaps(self, cmap_name: str):
-        self.pg_win.load_ct(cmap_name)
+    def set_all_cmaps_reverse(self,reverse):
+        self.cmap_reverse = reverse
+        self.set_all_cmaps()
+    
+    def set_all_cmaps_name(self,cmap_name):
+        self.cmap_name = cmap_name
+        self.set_all_cmaps()
+       
+    def set_all_cmaps(self):
+        print('\nImageTool.set_all_cmaps')
+        self.pg_win.load_ct(self.cmap_name,self.cmap_reverse)
+
+
+
+    def set_all_gamma_spinbox_slot(self, slider_value):
+        self.tabs_widget.colors_tab.gamma_spinbox.blockSignals(True)
+        self.tabs_widget.colors_tab.gamma_spinbox.setValue(10**(slider_value/20))
+        self.tabs_widget.colors_tab.gamma_spinbox.blockSignals(False)
+        self.pg_win.gamma = self.tabs_widget.colors_tab.gamma_spinbox.value()
+        self.pg_win.update()
+
+    def set_all_gamma_slider_slot(self):
+        self.tabs_widget.colors_tab.gamma_slider.blockSignals(True)
+        self.tabs_widget.colors_tab.gamma_slider.setValue(round(20*np.log10(self.gamma_spinbox.value())))
+        self.tabs_widget.colors_tab.gamma_slider.blockSignals(False)
+        self.pg_win.gamma = self.tabs_widget.colors_tab.gamma_spinbox.value()
+        self.pg_win.update()
 
     def transpose_data(self, tr):
         self.data = self.data.transpose(tr)

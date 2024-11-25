@@ -97,12 +97,20 @@ class CMap:
         self.pixmaps = {}
         self.icons = {}
 
-    def load_ct(self, name='default_cmap'):
+    def load_ct(self, name='default_cmap',reverse=False):
+        print('CMap.load',name,reverse)
         if name in self.colortables:
-            return self.colortables[name]
+            dat = self.colortables[name]
+            if reverse:
+                dat = np.array(list(reversed(dat)))
+                name+='_r'
+            self.colortables[name] = dat
+            return dat
         elif name in self.cmaps:
             filepath = Path(modulepath, 'data', name + '.npy')
             dat = np.load(str(filepath)).astype(np.uint8)
+            if reverse:
+                dat = np.array(list(reversed(dat)))
             self.colortables[name] = dat
             return dat
         else:
@@ -122,7 +130,7 @@ class CMap:
         else:
             raise ImportError("Failed to import pyqtgraph, method load_icon() not available.")
 
-            np.save(newpath, dat)
+            
     def load_pixmap(self, name='default_cmap'):
         if qt:
             if name in self.pixmaps:

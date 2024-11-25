@@ -52,6 +52,8 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         # Properties for color map
         self.ct: np.array = np.array([])
         self.ct_name: str = default_cmap
+        self.gamma = 1
+        self.reverse_cmap = False
 
         # Properties for tracking the mouse
         self.mouse_pos: pg.Qt.QtCore.QPointF = pg.Qt.QtCore.QPointF(0, 0)
@@ -62,7 +64,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
 
         self.status_bar: str = ''  # string representing current mouse location
 
-        self.load_ct(self.ct_name)
+        self.load_ct(self.ct_name,self.reverse_cmap)#
         self.build_layout()  # add plots according to chosen layout which populates self.lineplots and self.img_axes
         self.create_items()  # now that axes are ready, make ImageItems, PlotDataItems, and Cursor lines
         self.init_data()  # set data for each ImageItem, PlotDataItem, and connect cursors to data
@@ -305,7 +307,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         else:
             lineplot.setData(x.values, self.data.axes[index])
 
-    def load_ct(self, cmap_name: str = default_cmap):
+    def load_ct(self, cmap_name: str = default_cmap, reverse: bool = False):
         """
         Supported color maps:
         - viridis
@@ -314,7 +316,8 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         - plasma
         - CET color maps (https://peterkovesi.com/projects/colourmaps/)
         """
-        lut = CMap().load_ct(cmap_name)
+        lut = CMap().load_ct(cmap_name,reverse)
+        print('\tPGImageTool.load_ct',cmap_name,reverse)
         if lut is not None:
             self.ct = lut
             self.ct_name = cmap_name
