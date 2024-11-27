@@ -98,7 +98,7 @@ class CMap:
         self.icons = {}
 
     def load_ct(self, name='default_cmap',reverse=False):
-        print('CMap.load',name,reverse)
+        #print('CMap.load',name,reverse)
         if name in self.colortables:
             dat = self.colortables[name]
             if reverse:

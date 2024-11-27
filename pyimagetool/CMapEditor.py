@@ -10,6 +10,9 @@ from functools import partial
 from pyimagetool.pgwidgets import ImageBase
 from pyimagetool.cmaps.CMap import CMap, default_cmap
 
+""" 
+Popup window for modifying the color map
+"""
 
 class CMapDialog(QtWidgets.QDialog):
 
@@ -27,6 +30,10 @@ class CMapEditor(QtWidgets.QWidget):
 
     def __init__(self, data, parent=None):
         super().__init__(parent)
+
+        #variables
+        self.cmap_name = default_cmap
+        self.cmap_reverse = False
 
         # Layout management
         self.main_layout = QtWidgets.QVBoxLayout()
@@ -70,8 +77,18 @@ class CMapEditor(QtWidgets.QWidget):
         self.enable_isocurve_checkbox.setChecked(True)
         self.enable_isocurve = True
         self.enable_isocurve_label = QtWidgets.QLabel('Enable Isocurve?')
+        
+        
         self.cmap_label = QtWidgets.QLabel('Colormap')
-        #self.cmap_label.setAlignment(QtCore.Qthist.AlignHCenter)
+        self.cmap_layout.addWidget(self.cmap_label)
+
+        self.reverse_cmap_label = QtWidgets.QLabel('Reverse?')
+        self.reverse_cmap_checkbox = QtWidgets.QCheckBox()
+        self.reverse_cmap = False
+        self.reverse_cmap_checkbox.setChecked(self.reverse_cmap)     
+        self.cmap_layout.addWidget(self.reverse_cmap_label)
+        self.cmap_layout.addWidget(self.reverse_cmap_checkbox)
+        
         self.cmap_combobox = QtWidgets.QComboBox()
         self.cmap_combobox.setMinimumSize(150, 0)
         self.header = QtWidgets.QWidget()
@@ -97,11 +114,9 @@ class CMapEditor(QtWidgets.QWidget):
         
         self.cmap_combobox.setIconSize(QtCore.QSize(64, 12))
         self.cmap_combobox.setCurrentText(default_cmap)
-
-        def update_cmap(cmap_name):
-            self.pg_win.load_ct(cmap_name)
-            self.pg_win.update()
-        self.cmap_combobox.currentTextChanged.connect(update_cmap)
+        self.cmap_combobox.currentTextChanged.connect(self.update_cmap_name)
+        
+        self.reverse_cmap_checkbox.clicked.connect(self.update_cmap_reverse)
 
         # Connect signals to slots
         self.gamma_slider.valueChanged.connect(self.gamma_spinbox_slot)
@@ -114,7 +129,7 @@ class CMapEditor(QtWidgets.QWidget):
         self.load_map_button.clicked.connect(self.load_cmap_clicked)
 
         # Initialize
-        update_cmap(default_cmap)
+        self.update_cmap(self.cmap_name, self.cmap_reverse)
 
         # Add widgets
         self.header_layout.addLayout(self.cmap_norm_layout)
@@ -155,6 +170,20 @@ class CMapEditor(QtWidgets.QWidget):
         self.bottom_layout.addWidget(self.ok_button)
         self.bottom_layout.addWidget(self.cancel_button)
         self.setLayout(self.main_layout)
+
+    def update_cmap_name(self, cmap_name):
+        self.cmap_name = cmap_name
+        self.update_cmap(self.cmap_name, self.cmap_reverse)
+
+
+    def update_cmap_reverse(self, cmap_reverse):
+        self.update_cmap_reverse = cmap_reverse
+        self.update_cmap(self.cmap_name, self.cmap_reverse)
+    
+
+    def update_cmap(self, cmap_name, cmap_reverse):
+        self.pg_win.load_ct(cmap_name,cmap_reverse)
+        self.pg_win.update()
 
     def save_cmap(self, filename):
         """Construct a dict with relevant data and save to filename using pickle dumps"""
@@ -388,7 +417,7 @@ class PGCMapEditor(pg.GraphicsLayoutWidget):
         - plasma
         - CET color maps (https://peterkovesi.com/projects/colourmaps/)
         """
-        lut = CMap().load_ct(cmap_name)
+        lut = CMap().load_ct(cmap_name,reverse)
         if lut is not None:
             self.ct = lut
             self.ct_name = cmap_name

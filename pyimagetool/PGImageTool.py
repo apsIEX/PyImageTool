@@ -317,7 +317,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         - CET color maps (https://peterkovesi.com/projects/colourmaps/)
         """
         lut = CMap().load_ct(cmap_name,reverse)
-        print('\tPGImageTool.load_ct',cmap_name,reverse)
+        #print('\tPGImageTool.load_ct',cmap_name,reverse)
         if lut is not None:
             self.ct = lut
             self.ct_name = cmap_name

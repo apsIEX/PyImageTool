@@ -162,8 +162,8 @@ class IT_container:
         Automatically iterates imagetool name each time a new window is created
         """
         v_array = np.empty(0)
-        print('instances')
-        print(self.instances)
+        #print('instances')
+        #print(self.instances)
         for key in self.instances.keys():
             base, v = re.split('_',key)
             v_array = np.append(v_array, int(v))

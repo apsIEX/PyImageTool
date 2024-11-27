@@ -247,11 +247,6 @@ class ColorsTab(QtWidgets.QWidget):
         #self.pg_win.gamma = self.gamma_spinbox.value()
         #self.pg_win.update()
     
-    def reverse_cmap_clicked(self):
-
-        pass
-
-
 
 class CMapEditForm:
     def setupUi(self, Form):

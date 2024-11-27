@@ -9,6 +9,8 @@ from pyimagetool.widgets import TabsWidget
 from pyimagetool.PGImageTool import PGImageTool
 from pyimagetool.DataMatrix import RegularDataArray
 
+from pyimagetool.cmaps.CMap import  default_cmap
+
 try:
     import xarray as xr
     DataType = Union[RegularDataArray, np.array, xr.DataArray]
@@ -16,6 +18,15 @@ except ImportError:
     xr = None
     DataType = Union[RegularDataArray, np.array]
 
+
+"""
+ImageTool instance  
+    tool => pyimagetool.ImageTool()
+    tool.pg_win => pyimagetool.PGImageTool.PGImageTool()
+    tools.pg_widget => pyqtgraph.Qt.QtWidgets.QWidget()
+    tool.tabs_widget => pyimagetool.widgets.TabsWidget()
+
+"""
 
 class ImageTool(QtWidgets.QWidget):
     LayoutSimple = PGImageTool.LayoutSimple
@@ -40,7 +51,7 @@ class ImageTool(QtWidgets.QWidget):
         # Create data
         self.data: RegularDataArray = RegularDataArray(data)
         self.it_layout: int = layout
-        self.cmap_name = ''
+        self.cmap_name = default_cmap
         self.cmap_reverse = False
 
         # Create tabs and ImageTool PyQt Widget
@@ -134,7 +145,6 @@ class ImageTool(QtWidgets.QWidget):
         self.set_all_cmaps()
        
     def set_all_cmaps(self):
-        print('\nImageTool.set_all_cmaps')
         self.pg_win.load_ct(self.cmap_name,self.cmap_reverse)
 
 
