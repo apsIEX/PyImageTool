@@ -50,12 +50,14 @@ class ImageTool(QtWidgets.QWidget):
             d[np.isnan(d)] = 0
         # Create data
         self.data: RegularDataArray = RegularDataArray(data)
-        self.it_layout: int = layout
-        self.cmap_name = default_cmap
-        self.cmap_reverse = False
+        #dictionary of all local variable 
+        self.vars = {'it_layout': layout,
+                     'cmap_name': default_cmap,
+                     'cmap_reverse':False,
+                     'cmap_gamma':1
+                     } 
 
         # Create tabs and ImageTool PyQt Widget
-        #self.info_bar = InfoBar(self.data, parent=self)
         self.tabs_widget = TabsWidget(self.data, parent=self)
         self.pg_widget = QtWidgets.QWidget()  # widget to hold pyqtgraph graphicslayout
         self.pg_widget.setLayout(QtWidgets.QVBoxLayout())
@@ -75,7 +77,9 @@ class ImageTool(QtWidgets.QWidget):
         # TODO: update to QT 5.14 and use textActivated signal instead
         self.tabs_widget.colors_tab.reverse_cmap_checkbox.clicked.connect(self.set_all_cmaps_reverse)
         self.tabs_widget.colors_tab.cmap_combobox.currentTextChanged.connect(self.set_all_cmaps_name)#here
-        
+        self.tabs_widget.colors_tab.gamma_slider.valueChanged.connect(self.set_all_gamma_spinbox_slot)
+        self.tabs_widget.colors_tab.gamma_spinbox.valueChanged.connect(self.set_all_gamma_slider_slot)
+
         self.tabs_widget.info_tab.transpose_request.connect(self.transpose_data)
 
     def update_status_bar(self, msg: tuple):
@@ -128,40 +132,36 @@ class ImageTool(QtWidgets.QWidget):
 
     def reset(self):
         layout = QtWidgets.QBox.Layout()
-        #label = QtWidgets.QLabel("Color Map Editor")
-        #layout.addWidget(label)
-
-        #slider = QtWidgets.QSlider()
-        # Create info bar and ImageTool PyQt Widget
         self.tabs_widget.reset(self.data)
         self.pg_win.reset(self.data)
 
     def set_all_cmaps_reverse(self,reverse):
-        self.cmap_reverse = reverse
+        self.vars['cmap_reverse'] = reverse
         self.set_all_cmaps()
     
     def set_all_cmaps_name(self,cmap_name):
-        self.cmap_name = cmap_name
+        self.vars['cmap_name'] = cmap_name
         self.set_all_cmaps()
        
     def set_all_cmaps(self):
-        self.pg_win.load_ct(self.cmap_name,self.cmap_reverse)
+        print('ImageTool.set_all_cmaps: ',self.vars['cmap_name'],self.vars['cmap_reverse'],self.vars['cmap_gamma'])
+        self.pg_win.load_ct(self.vars['cmap_name'],self.vars['cmap_reverse'],self.vars['cmap_gamma'])
 
-
-
-    def set_all_gamma_spinbox_slot(self, slider_value):
+    def set_all_gamma_spinbox_slot(self, spinbox_value):
         self.tabs_widget.colors_tab.gamma_spinbox.blockSignals(True)
-        self.tabs_widget.colors_tab.gamma_spinbox.setValue(10**(slider_value/20))
+        self.tabs_widget.colors_tab.gamma_spinbox.setValue(10**(spinbox_value/20))
         self.tabs_widget.colors_tab.gamma_spinbox.blockSignals(False)
-        self.pg_win.gamma = self.tabs_widget.colors_tab.gamma_spinbox.value()
-        self.pg_win.update()
+        self.vars['cmap_gamma'] = 10**(spinbox_value/20)
+        self.pg_win.load_ct(self.vars['cmap_name'],self.vars['cmap_reverse'],self.vars['cmap_gamma'])
 
-    def set_all_gamma_slider_slot(self):
+    def set_all_gamma_slider_slot(self,slider_value):
         self.tabs_widget.colors_tab.gamma_slider.blockSignals(True)
-        self.tabs_widget.colors_tab.gamma_slider.setValue(round(20*np.log10(self.gamma_spinbox.value())))
+        self.tabs_widget.colors_tab.gamma_slider.setValue(round(20*np.log10(self.tabs_widget.colors_tab.gamma_spinbox.value())))
+        self.tabs_widget.colors_tab.gamma_slider.setValue(round(20*np.log10(self.tabs_widget.colors_tab.gamma_spinbox.value())))
+
         self.tabs_widget.colors_tab.gamma_slider.blockSignals(False)
-        self.pg_win.gamma = self.tabs_widget.colors_tab.gamma_spinbox.value()
-        self.pg_win.update()
+        self.vars['cmap_gamma'] =  self.tabs_widget.colors_tab.gamma_spinbox.value()
+        self.pg_win.load_ct(self.vars['cmap_name'],self.vars['cmap_reverse'],self.vars['cmap_gamma'])
 
     def transpose_data(self, tr):
         self.data = self.data.transpose(tr)

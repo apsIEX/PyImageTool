@@ -189,7 +189,6 @@ class ColorsTab(QtWidgets.QWidget):
         self.gamma_spinbox.setRange(10**-2, 10**2)
         self.gamma_spinbox.setValue(1)
         self.gamma_spinbox.setSingleStep(0.1)
-        self.gamma_spinbox.valueChanged.connect(self.gamma_slider_slot)
         self.gamma_value_layout.addWidget(self.gamma_spinbox)
         #slider
         self.gamma_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
@@ -200,7 +199,6 @@ class ColorsTab(QtWidgets.QWidget):
         self.gamma_slider.setMinimum(gamma_min)
         self.gamma_slider.setMaximum(gamma_max)
         self.gamma_slider.setValue(0)
-        self.gamma_slider.valueChanged.connect(self.gamma_spinbox_slot)
         self.gamma_value_layout.addWidget(self.gamma_slider)
 
         #cmap widgets

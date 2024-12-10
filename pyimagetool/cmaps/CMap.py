@@ -97,25 +97,38 @@ class CMap:
         self.pixmaps = {}
         self.icons = {}
 
-    def load_ct(self, name='default_cmap',reverse=False):
-        #print('CMap.load',name,reverse)
-        if name in self.colortables:
-            dat = self.colortables[name]
-            if reverse:
-                dat = np.array(list(reversed(dat)))
-                name+='_r'
-            self.colortables[name] = dat
-            return dat
-        elif name in self.cmaps:
-            filepath = Path(modulepath, 'data', name + '.npy')
+    def load_ct(self, ct_name='default_cmap',ct_reverse=False,ct_gamma=1):
+        """
+        Loads the cmap if not already loaded and stores in the dictionary self.colortables
+        Then updates the cmap to adjusting the gamma and the reverse
+        """
+        if ct_name in self.colortables:
+            dat = self.colortables[ct_name]
+        elif ct_name in self.cmaps:
+            filepath = Path(modulepath, 'data', ct_name + '.npy')
             dat = np.load(str(filepath)).astype(np.uint8)
-            if reverse:
-                dat = np.array(list(reversed(dat)))
-            self.colortables[name] = dat
-            return dat
         else:
-            raise FileNotFoundError(f'Colormap "{name}" is not loaded, try reloading.')
+            raise FileNotFoundError(f'Colormap "{ct_name}" is not loaded, try reloading.')
+        
+        self.colortables[ct_name] = dat
+        dat = self.update_ct(dat,ct_reverse,ct_gamma)
+        return dat
+    
+    def update_ct(self,dat,ct_reverse=False,ct_gamma=1):
+        """
+        update the cmap array to reverse or adjust gamma
+        """
+        if ct_reverse:
+            dat = np.array(list(reversed(dat)))
+        
+        if ct_gamma !=1:
+            i = np.round((np.arange(len(dat))/(len(dat) - 1))**ct_gamma*(len(dat) - 1)).astype('int')
+            i[i > 255] = 255
+            dat = dat[i]
 
+        print(dat[0:3])
+        return dat
+        
     def load_icon(self, name='default_cmap'):
         if qt:
             if name in self.icons:

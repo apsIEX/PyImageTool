@@ -202,7 +202,7 @@ class IT_container:
         obj.setWindowTitle(name)
         obj.show()
         print('Showing '+name)
-        return(obj)
+        #return(obj)
     
     def export_dictionary(self, img_prof):
         '''
