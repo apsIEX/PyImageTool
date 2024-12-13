@@ -21,6 +21,7 @@ class TabsWidget(QtWidgets.QWidget):
         self.tab2 = QtWidgets.QWidget()
         self.tab3 = QtWidgets.QWidget()
         self.tab4 = QtWidgets.QWidget()
+        self.tab5 = QtWidgets.QWidget()
         #self.tabs.resize(300,200)
               
         # Add tab1 => Info
