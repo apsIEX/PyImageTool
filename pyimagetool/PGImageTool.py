@@ -3,7 +3,6 @@ from typing import Dict, List, Tuple, Union
 from functools import partial
 from collections.abc import Iterable
 import pyqtgraph as pg
-from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
 from pyimagetool.DataMatrix import RegularDataArray
 from pyimagetool.cmaps.CMap import CMap, default_cmap
@@ -366,6 +365,7 @@ class PGImageTool(pg.GraphicsLayoutWidget):
         i should be index for the x-axis
         j should be index for the y-axis
         img is a reference to the image"""
+        
         if not evt.isExit():
             self.mouse_panel = 'img_' + self.index_to_coord[i] + self.index_to_coord[j]
             mousepnt = img.transform().map(evt.pos())
@@ -375,11 +375,20 @@ class PGImageTool(pg.GraphicsLayoutWidget):
             pos[j] = mousepnt.y()
             idx = np.round((pos - self.data.coord_min)/self.data.delta).astype(np.int32)
             if self.data.ndim == 2:
-                self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g} [{3:d},{4:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                try:
+                    self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g} [{3:d},{4:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                except:
+                    pass
             elif self.data.ndim == 3:
-                self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g}, z = {3:#.3g} [{4:d},{5:d},{6:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                try:
+                    self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g}, z = {3:#.3g} [{4:d},{5:d},{6:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                except:
+                    pass
             elif self.data.ndim == 4:
-                self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g}, z = {3:#.3g}, t = {4:#.4g} [{5:d},{6:d},{7:d},{8:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                try:
+                    self.status_bar = "{0:#.3g} : x = {1:#.3g}, y = {2:#.3g}, z = {3:#.3g}, t = {4:#.4g} [{5:d},{6:d},{7:d},{8:d}]".format(self.data.values[tuple(idx)], *tuple(pos), *tuple(idx))
+                except:
+                    pass
             else:
                 raise RuntimeError("The data ndim for an image is not 2, 3, or 4")
             self.mouse_hover.emit(self.status_bar)

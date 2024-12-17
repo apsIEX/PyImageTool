@@ -12,7 +12,7 @@ def imagetool(data):
     import sys
     app = QtWidgets.QApplication.instance()
     if app is None:
-        app = QtGui.QApplication([])
+        app = QtWidgets.QApplication([])
         tool = ImageTool(data, layout=PGImageTool.LayoutComplete)
         tool.show()
         if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):

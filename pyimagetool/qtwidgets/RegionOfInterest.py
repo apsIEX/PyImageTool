@@ -5,7 +5,6 @@ import numpy as np
 import PyQt5 as pq5
 
 from pyqtgraph.Qt import QtGui, QtCore
-#from pyqtgraph.GraphicsScene.mouseEvents import HoverEvent
 
 from PyQt5.QtWidgets import QMessageBox
 from pyimagetool.DataMatrix import RegularDataArray

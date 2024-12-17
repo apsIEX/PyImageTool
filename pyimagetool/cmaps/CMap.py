@@ -126,7 +126,6 @@ class CMap:
             i[i > 255] = 255
             dat = dat[i]
 
-        print(dat[0:3])
         return dat
         
     def load_icon(self, name='default_cmap'):

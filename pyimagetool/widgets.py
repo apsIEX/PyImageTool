@@ -22,6 +22,8 @@ class TabsWidget(QtWidgets.QWidget):
         self.tab3 = QtWidgets.QWidget()
         self.tab4 = QtWidgets.QWidget()
         self.tab5 = QtWidgets.QWidget()
+        self.tabs.setMinimumHeight(200)
+        self.tabs.setMaximumHeight(200)
         #self.tabs.resize(300,200)
               
         # Add tab1 => Info

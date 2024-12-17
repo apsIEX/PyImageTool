@@ -59,6 +59,8 @@ class ImageTool(QtWidgets.QWidget):
 
         # Create tabs and ImageTool PyQt Widget
         self.tabs_widget = TabsWidget(self.data, parent=self)
+        self.tabs_widget.setMinimumHeight(225)
+        self.tabs_widget.setMaximumHeight(225)
         self.pg_widget = QtWidgets.QWidget()  # widget to hold pyqtgraph graphicslayout
         self.pg_widget.setLayout(QtWidgets.QVBoxLayout())
         self.pg_win = PGImageTool(self.data, layout=layout)  # the pyqtgraph graphicslayout
